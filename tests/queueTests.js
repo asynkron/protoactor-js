@@ -1,5 +1,5 @@
-var Queue = require('./queue')
-var Queue2 = require('./queue2')
+var Queue = require('../src/queue')
+var Queue2 = require('../src/queue2')
 
 var c = 10*1000*1000
 var q1 = new Queue()

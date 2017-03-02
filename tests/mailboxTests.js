@@ -1,6 +1,6 @@
 // test code below...
 
-var mailbox = require('./mailbox')
+var mailbox = require('../src/mailbox')
 
 class Dispatcher {
     schedule(fn) {
@@ -49,11 +49,11 @@ function Sleep(timeout) {
 
 async function test() {
     var mb = mailbox.Unbounded()
-    mb.registerHandlers(new Invoker(), new Dispatcher())
+    mb.RegisterHandlers(new Invoker(), new Dispatcher())
     var c = 1000*1000;
     var hrstart = process.hrtime();
     for(var i=0;i<c;i++) {
-        mb.postUserMessage('hello')
+        mb.PostUserMessage('hello')
     }
     var hr = process.hrtime(hrstart)
     var s = hr[0] + hr[1]/(1000*1000*1000)
