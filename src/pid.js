@@ -29,6 +29,7 @@ class PID {
 
     Stop() {
         this.Ref.Stop()
+        ProcessRegistry.Remove(this)
     }
 }
 

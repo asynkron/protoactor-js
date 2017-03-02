@@ -19,6 +19,10 @@ class ProcessRegistry {
     NextId() {
         return "$" + this.counter++
     }
+
+    Remove(pid) {
+        this.localActorRefs[pid.ID] = undefined
+    }
 }
 
 module.exports = new ProcessRegistry()
