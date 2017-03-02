@@ -1,6 +1,7 @@
 "use strict"
 
 class Started {}
+class Stop {}
 
 class MessageSender{
     constructor(message, sender) {
@@ -11,5 +12,6 @@ class MessageSender{
 
 module.exports = {
     Started: new Started(),
+    Stop: new Stop(),
     MessageSender: MessageSender
 }

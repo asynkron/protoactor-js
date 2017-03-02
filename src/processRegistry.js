@@ -1,7 +1,5 @@
 "use strict"
 
-var PID = require('./pid')
-
 class ProcessRegistry {
     constructor() {
         this.localActorRefs = {}
@@ -12,8 +10,8 @@ class ProcessRegistry {
         return this.localActorRefs[pid.ID]
     }
 
-    TryAdd(id, ref) {
-        var pid = new PID("local", id, ref)
+    TryAdd(id, ref, pidCtor) {
+        var pid = new pidCtor("local", id, ref)
         this.localActorRefs[pid.Id] = ref
         return pid
     }

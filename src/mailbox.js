@@ -35,32 +35,34 @@ class Mailbox {
         if (this.running) return
 
         if (!this.userMessageQueue.isEmpty()) {
-            this.schedule()
+            await this.schedule()
         }
     }
 
-    schedule() {
+    async schedule() {
         //console.log('mailbox scheduled')
         this.running = true;
-        this.dispatcher.schedule(this.run.bind(this));
+        await this.dispatcher.Schedule(this.run.bind(this));
     }
 
     async run() {
-        for (var i = 0; i < this.dispatcher.throughput(); i++) {
+        for (var i = 0; i < this.dispatcher.GetThroughput(); i++) {
             var msg
             msg = this.systemMessageQueue.dequeue()
-            if (msg) {
+            if (msg != undefined) {
                 await this.invoker.InvokeSystemMessage(msg)
                 continue
             }
             msg = this.userMessageQueue.dequeue()
-            if (msg) {
+            if (msg != undefined) {
                 await this.invoker.InvokeUserMessage(msg)
+            } else {
+                break
             }
         }
         this.running = false;
         if (!this.userMessageQueue.isEmpty()) {
-            this.schedule();
+            await this.schedule();
         }
     }
 }

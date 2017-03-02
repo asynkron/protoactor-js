@@ -4,7 +4,11 @@ var Props = require('./props')
 var ProcessRegistry = require('./processRegistry')
 
 function fromFunc(fn) {
-    return new Props().WithProducer(() => new EmptyActor(fn))
+    return fromProducer(() => new EmptyActor(fn))
+}
+
+function fromProducer(fn) {
+    return new Props().WithProducer(fn)
 }
 
 function spawn(props) {
@@ -24,5 +28,6 @@ class EmptyActor {
 
 module.exports = {
     fromFunc: fromFunc,
+    fromProducer: fromProducer,
     spawn: spawn
 }
