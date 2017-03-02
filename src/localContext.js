@@ -11,13 +11,13 @@ class LocalContext {
 
     async InvokeSystemMessage(message) {
         if (message === messages.Started) {
-            await this.InvokeUserMessage(message)
-            return
+            return this.InvokeUserMessage(message)
         }
+        return Promise.resolve()
     }
 
     async InvokeUserMessage(message) {
-        await this._processMessage(message)
+        return this._processMessage(message)
     }
 
     Respond(message) {
@@ -35,7 +35,7 @@ class LocalContext {
         } else {
             this.Message = message
         }
-        await this._actor.Receive(this)
+        return this._actor.Receive(this)
     }
 }
 

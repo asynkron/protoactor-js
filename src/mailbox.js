@@ -12,13 +12,11 @@ class Mailbox {
     }
 
     PostUserMessage(message) {
-        //console.log('user message posted', message)
         this.userMessageQueue.enqueue(message)
         this.processMessages()
     }
 
     PostSystemMessage(message) {
-        //console.log('system message posted', message)
         this.systemMessageQueue.enqueue(message)
         this.processMessages()
     }
@@ -31,18 +29,17 @@ class Mailbox {
     Start() {
     }
 
-    async processMessages() {
+    processMessages() {
         if (this.running) return
 
         if (!this.userMessageQueue.isEmpty()) {
-            await this.schedule()
+            this.schedule()
         }
     }
 
-    async schedule() {
-        //console.log('mailbox scheduled')
+    schedule() {
         this.running = true;
-        await this.dispatcher.Schedule(this.run.bind(this));
+        this.dispatcher.Schedule(this.run.bind(this));
     }
 
     async run() {
@@ -62,7 +59,7 @@ class Mailbox {
         }
         this.running = false;
         if (!this.userMessageQueue.isEmpty()) {
-            await this.schedule();
+            this.schedule();
         }
     }
 }

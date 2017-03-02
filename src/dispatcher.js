@@ -6,7 +6,7 @@ class Dispatcher {
     }
 
     Schedule(fn) {
-        setTimeout(fn, 1)
+        fn()
     }
 
     GetThroughput() {
