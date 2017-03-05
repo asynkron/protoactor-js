@@ -14,6 +14,10 @@ class PID {
         this.Ref.SendUserMessage(this, message, null)
     }
 
+    SendSystemMessage(message) {
+        this.Ref.SendSystemMessage(this, message, null)
+    }
+
     RequestPromise(message) {
         var p = new PromiseProcess()
         var name  = ProcessRegistry.NextId()
@@ -30,6 +34,10 @@ class PID {
     Stop() {
         this.Ref.Stop()
         ProcessRegistry.Remove(this)
+    }
+
+    ToShortString() {
+        return this.Address+'/'+this.Id
     }
 }
 

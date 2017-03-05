@@ -13,7 +13,7 @@ function fromProducer(fn) {
 
 function spawn(props) {
     var name = ProcessRegistry.NextId()
-    return spawnNamed(name)
+    return spawnNamed(props, name)
 }
 
 function spawnPrefix(props, prefix) {
@@ -38,5 +38,6 @@ class EmptyActor {
 module.exports = {
     fromFunc: fromFunc,
     fromProducer: fromProducer,
-    spawn: spawn
+    spawn: spawn,
+    done: Promise.resolve()
 }

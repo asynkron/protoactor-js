@@ -3,6 +3,7 @@
 var mailbox = require('./mailbox')
 var messages = require('./messages')
 var dispatcher = require('./dispatcher')
+var supervision = require('./supervision')
 var ProcessRegistry = require('./processRegistry')
 var LocalContext = require('./localContext')
 var LocalProcess = require('./localProcess')
@@ -12,6 +13,7 @@ class Props {
     constructor() {
         this.mailboxProducer = () => mailbox.Unbounded()
         this.dispatcher = new dispatcher.DefaultDispatcher()
+        this.supervisorStrategy = supervision.DefaultStrategy
     }
 
     WithProducer(producer) {
@@ -21,10 +23,16 @@ class Props {
 
     WithDispatcher(dispatcher) {
         this.dispatcher = dispatcher
+        return this
+    }
+
+    WithSupervisor(supervisor) {
+        this.supervisorStrategy = supervisor
+        return this
     }
 
     Spawn(name, parent) {
-        var context = new LocalContext(this.producer, parent)
+        var context = new LocalContext(this.producer, this.supervisorStrategy, parent)
         var mailbox = this.mailboxProducer()
         var dispatcher = this.dispatcher
         var ref = new LocalProcess(mailbox)
