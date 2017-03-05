@@ -13,6 +13,15 @@ function fromProducer(fn) {
 
 function spawn(props) {
     var name = ProcessRegistry.NextId()
+    return spawnNamed(name)
+}
+
+function spawnPrefix(props, prefix) {
+    var name = prefix + ProcessRegistry.NextId()
+    return spawnNamed(props, name)
+}
+
+function spawnNamed(props, name) {
     return props.Spawn(name, null)
 }
 
