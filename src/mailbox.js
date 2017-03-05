@@ -8,7 +8,7 @@ class Mailbox {
     constructor(systemMessageQueue, userMessageQueue, mailboxStatistics) {
         this.systemMessageQueue = systemMessageQueue
         this.userMessageQueue = userMessageQueue
-        this.mailboxStatistics = mailboxStatistics
+        this.mailboxStatistics = mailboxStatistics || []
         this.running = false
     }
 
@@ -50,19 +50,23 @@ class Mailbox {
     }
 
     async run() {
-        for (var i = 0; i < this.dispatcher.GetThroughput(); i++) {
-            var msg
-            msg = this.systemMessageQueue.dequeue()
-            if (msg != undefined) {
-                await this.invoker.InvokeSystemMessage(msg)
-                continue
+        var msg
+        try {
+            for (var i = 0; i < this.dispatcher.GetThroughput(); i++) {
+                msg = this.systemMessageQueue.dequeue()
+                if (msg != undefined) {
+                    await this.invoker.InvokeSystemMessage(msg)
+                    continue
+                }
+                msg = this.userMessageQueue.dequeue()
+                if (msg != undefined) {
+                    await this.invoker.InvokeUserMessage(msg)
+                } else {
+                    break
+                }
             }
-            msg = this.userMessageQueue.dequeue()
-            if (msg != undefined) {
-                await this.invoker.InvokeUserMessage(msg)
-            } else {
-                break
-            }
+        } catch(e) {
+            this.invoker.EscalateFailure(e, msg)
         }
         this.running = false;
         if (!this.systemMessageQueue.isEmpty() || !this.userMessageQueue.isEmpty()) {
@@ -72,6 +76,25 @@ class Mailbox {
                 this.mailboxStatistics[i].MailboxEmpty()
             }
         }
+    }
+
+    // run2() {
+    //     let msg = this.systemMessageQueue.dequeue()
+    //     if (msg != undefined) {
+    //         let p = this.invoker.InvokeSystemMessage(msg)
+    //         p.then(this.run2.bind(this), this.handleError)
+    //         return
+    //     }
+    //     msg = this.userMessageQueue.dequeue()
+    //     if (msg != undefined) {
+    //         let p = this.invoker.InvokeUserMessage(msg)
+    //         p.then(this.run2.bind(this), this.handleError)
+    //         return
+    //     }
+    // }
+
+    handleError(reason) {
+        
     }
 }
 

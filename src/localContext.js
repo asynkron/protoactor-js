@@ -24,18 +24,22 @@ class LocalContext {
         this.Sender.Tell(message)
     }
 
+    EscalateFailure(exception, message) {
+        console.log(exception)
+    }
+
     _incarnateActor() {
         this._actor = this.producer()
     }
 
-    _processMessage(message) {
+    async _processMessage(message) {
         if (message instanceof messages.MessageSender) {
             this.Message = message.Message
             this.Sender = message.Sender
         } else {
             this.Message = message
         }
-        return this._actor.Receive(this)
+        await this._actor.Receive(this)
     }
 }
 
