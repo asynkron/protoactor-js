@@ -9,14 +9,14 @@ class LocalContext {
         this._incarnateActor()
     }
 
-    async InvokeSystemMessage(message) {
+    InvokeSystemMessage(message) {
         if (message === messages.Started) {
             return this.InvokeUserMessage(message)
         }
         return Promise.resolve()
     }
 
-    async InvokeUserMessage(message) {
+    InvokeUserMessage(message) {
         return this._processMessage(message)
     }
 
@@ -28,7 +28,7 @@ class LocalContext {
         this._actor = this.producer()
     }
 
-    async _processMessage(message) {
+    _processMessage(message) {
         if (message instanceof messages.MessageSender) {
             this.Message = message.Message
             this.Sender = message.Sender
