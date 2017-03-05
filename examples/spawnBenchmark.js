@@ -20,6 +20,9 @@ class MyActor {
     }
 
     async Receive(context) {
+        // await new Promise((resolve, reject) => {
+        //     setTimeout(resolve, 0)
+        // })
         var msg = context.Message
         //console.log(msg)
         if (msg instanceof Request) {
@@ -37,8 +40,8 @@ class MyActor {
                 var div = msg.Div
                 child.Request(new Request(div, num, size), context.Self)
             }
-            if (++c % 1000 == 0)
-                console.log(new Date(), c, msg)
+            // if (++c % 1000 == 0)
+            //     console.log(new Date(), c, msg)
             return
         }
         if (msg == Number(msg)) {
@@ -56,7 +59,7 @@ async function run() {
     var pid = actor.spawn(myProps)
     console.log('starting')
     var hrstart = process.hrtime();
-    var response = await pid.RequestPromise(new Request(10, 0, 10*1000)) // should be 1M but node can't handle it - runs out of memory
+    var response = await pid.RequestPromise(new Request(10, 0, 100*1000)) // should be 1M but node can't handle it - runs out of memory
     console.log(response)
     var hr = process.hrtime(hrstart)
     var s = hr[0] + hr[1]/(1000*1000*1000)
