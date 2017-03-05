@@ -5,18 +5,25 @@ var Queue2 = require("./queue2")
 
 class Mailbox {
 
-    constructor(systemMessageQueue, userMessageQueue) {
+    constructor(systemMessageQueue, userMessageQueue, mailboxStatistics) {
         this.systemMessageQueue = systemMessageQueue
         this.userMessageQueue = userMessageQueue
+        this.mailboxStatistics = mailboxStatistics
         this.running = false
     }
 
     PostUserMessage(message) {
+        for(var i=0; i<this.mailboxStatistics.length; i++) {
+            this.mailboxStatistics[i].UserMessagePosted(message)
+        }
         this.userMessageQueue.enqueue(message)
         this.processMessages()
     }
 
     PostSystemMessage(message) {
+        for(var i=0; i<this.mailboxStatistics.length; i++) {
+            this.mailboxStatistics[i].SystemMessagePosted(message)
+        }
         this.systemMessageQueue.enqueue(message)
         this.processMessages()
     }
@@ -32,7 +39,7 @@ class Mailbox {
     processMessages() {
         if (this.running) return
 
-        if (!this.userMessageQueue.isEmpty()) {
+        if (!this.systemMessageQueue.isEmpty() || !this.userMessageQueue.isEmpty()) {
             this.schedule()
         }
     }
@@ -58,8 +65,12 @@ class Mailbox {
             }
         }
         this.running = false;
-        if (!this.userMessageQueue.isEmpty()) {
+        if (!this.systemMessageQueue.isEmpty() || !this.userMessageQueue.isEmpty()) {
             this.schedule();
+        } else {
+            for(var i=0; i<this.mailboxStatistics.length; i++) {
+                this.mailboxStatistics[i].MailboxEmpty()
+            }
         }
     }
 }
