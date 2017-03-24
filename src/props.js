@@ -14,6 +14,7 @@ class Props {
         this.mailboxProducer = () => mailbox.Unbounded()
         this.dispatcher = new dispatcher.DefaultDispatcher()
         this.supervisorStrategy = supervision.DefaultStrategy
+        this.spawner = Props.DefaultSpawner
     }
 
     WithProducer(producer) {
@@ -31,10 +32,19 @@ class Props {
         return this
     }
 
+    WithSpawner(spawner) {
+        this.spawner = spawner
+        return this
+    }
+
     Spawn(name, parent) {
-        var context = new LocalContext(this.producer, this.supervisorStrategy, parent)
-        var mailbox = this.mailboxProducer()
-        var dispatcher = this.dispatcher
+        return this.spawner(this, name, parent)
+    }
+
+    static DefaultSpawner(props, name, parent) {
+        var context = new LocalContext(props.producer, props.supervisorStrategy, parent)
+        var mailbox = props.mailboxProducer()
+        var dispatcher = props.dispatcher
         var ref = new LocalProcess(mailbox)
         var pid = ProcessRegistry.TryAdd(name, ref, PID)
         context.Self = pid
@@ -44,6 +54,5 @@ class Props {
         return pid
     }
 }
-
 
 module.exports = Props

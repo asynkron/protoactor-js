@@ -36,6 +36,7 @@ function Queue(){
    */
   this.enqueue = function(item){
     queue.push(item);
+    return Promise.resolve()
   }
 
   /* Dequeues an item and returns it. If the queue is empty, the value

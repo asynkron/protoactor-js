@@ -12,10 +12,12 @@ class PromiseProcess {
 
     SendUserMessage(pid, message, sender) {
         this.resolve(message)
-        //this.PID.Stop()
+        return Promise.resolve()
+      //this.PID.Stop()
     }
 
     SendSystemMessage(pid, message) {
+        return Promise.resolve()
     }
 }
 

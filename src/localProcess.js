@@ -9,14 +9,13 @@ class LocalProcess {
 
     SendUserMessage(pid, message, sender) {
         if (sender) {
-            this.Mailbox.PostUserMessage(new messages.MessageSender(message, sender))
-            return
+            return this.Mailbox.PostUserMessage(new messages.MessageSender(message, sender))
         }
-        this.Mailbox.PostUserMessage(message)
+        return this.Mailbox.PostUserMessage(message)
     }
 
     SendSystemMessage(pid, message) {
-        this.Mailbox.PostSystemMessage(message)
+        return this.Mailbox.PostSystemMessage(message)
     }
 
     Stop(pid) {

@@ -12,19 +12,19 @@ class Mailbox {
         this.running = false
     }
 
-    PostUserMessage(message) {
+    async PostUserMessage(message) {
         for(var i=0; i<this.mailboxStatistics.length; i++) {
             this.mailboxStatistics[i].UserMessagePosted(message)
         }
-        this.userMessageQueue.enqueue(message)
+        await this.userMessageQueue.enqueue(message)
         this.processMessages()
     }
 
-    PostSystemMessage(message) {
+    async PostSystemMessage(message) {
         for(var i=0; i<this.mailboxStatistics.length; i++) {
             this.mailboxStatistics[i].SystemMessagePosted(message)
         }
-        this.systemMessageQueue.enqueue(message)
+        await this.systemMessageQueue.enqueue(message)
         this.processMessages()
     }
 

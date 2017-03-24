@@ -11,11 +11,11 @@ class PID {
     }
 
     Tell(message) {
-        this.Ref.SendUserMessage(this, message, null)
+        return this.Ref.SendUserMessage(this, message, null)
     }
 
     SendSystemMessage(message) {
-        this.Ref.SendSystemMessage(this, message, null)
+        return this.Ref.SendSystemMessage(this, message, null)
     }
 
     RequestPromise(message) {

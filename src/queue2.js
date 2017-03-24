@@ -8,16 +8,22 @@ class Queue2 {
     enqueue(o) {
         this.buffer[this.head++] = o
         if (this.head == this.buffer.length) {
-            this._reconstruct()
+            if (!this.dequeuePromise) {
+                this.dequeuePromise = new Promise((resolve, reject) => {
+                    this.dequeuePromiseResolve = resolve;
+                    this.dequeuePromiseReject = reject;
+                })
+            }
+            return this.dequeuePromise
         }
+        return Promise.resolve()
     }
 
     dequeue(o) {
         if (this.tail == this.head) return undefined
         var item = this.buffer[this.tail++]
-        if (this.tail * 2 >= this.getLength()) {
-            this._reconstruct()
-        }
+        this.dequeuePromise = null
+        this.dequeuePromiseResolve()
         return item
     }
 
