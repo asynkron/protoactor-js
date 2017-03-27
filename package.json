@@ -1,0 +1,23 @@
+{
+  "name": "protoactor-js",
+  "version": "0.1.0",
+  "description": "Proto Actor for JavaScript",
+  "directories": {
+    "example": "examples",
+    "test": "tests"
+  },
+  "scripts": {
+    //"test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cpx86/protoactor-js.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cpx86/protoactor-js/issues"
+  },
+  "homepage": "https://github.com/cpx86/protoactor-js#readme"
+}

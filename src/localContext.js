@@ -9,6 +9,7 @@ class LocalContext {
         this.supervisorStrategy = supervisorStrategy
         this.Parent = parent
         this.Children = []
+        this.behavior = []
         this._incarnateActor()
     }
 
@@ -86,8 +87,27 @@ class LocalContext {
         return pid
     }
 
+    SetBehavior(receive) {
+        this._behavior = []
+        this.PushBehavior(receive)
+    }
+
+    PushBehavior(receive) {
+        this._behavior.push(receive)
+        this._receive = receive
+    }
+
+    PopBehavior(receive) {
+        if (this._behavior.length <= 1) {
+            throw "Cannot pop actor's last behavior"
+        }
+        this._behavior.pop()
+        this._receive = this._behavior[this._behavior.length - 1]
+    }
+
     _incarnateActor() {
         this.Actor = this.producer()
+        this.SetBehavior(this.Actor.Receive.bind(this.Actor))
     }
 
     async _handleStop() {
@@ -160,7 +180,7 @@ class LocalContext {
         } else {
             this.Message = message
         }
-        await this.Actor.Receive(this)
+        await this._receive(this)
     }
 }
 

@@ -34,6 +34,9 @@ class Mailbox {
     }
 
     Start() {
+        for(var i=0; i<this.mailboxStatistics.length; i++) {
+            this.mailboxStatistics[i].MailboxStarted()
+        }
     }
 
     processMessages() {
