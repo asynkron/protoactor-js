@@ -2,6 +2,10 @@
 
 Ultra-fast, distributed, cross-platform actors.
 
+## Disclaimer
+
+This repo is in a very early phase of development. A lot of the core functionality works, but there's a lot of stuff left to do until this can be considered production-ready.
+
 ## Source code
 
 This is the JavaScript repository for Proto Actor.
