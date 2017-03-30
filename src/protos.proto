@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+message PID {
+  string Address = 1;
+  string Id = 2;
+}
+
+//user messages
+message PoisonPill {}
+
+//system messages
+message Watch {
+  PID watcher = 1;
+}
+
+message Unwatch {
+  PID watcher = 1;
+}
+
+message Terminated {
+  PID who = 1;
+  bool AddressTerminated = 2;
+}
+
+message Stop {}

@@ -7,7 +7,7 @@ class ProcessRegistry {
     }
 
     Get(pid) {
-        return this.localActorRefs[pid.ID]
+        return this.localActorRefs[pid.Id]
     }
 
     TryAdd(id, ref, pidCtor) {

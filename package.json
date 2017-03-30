@@ -7,7 +7,6 @@
     "test": "tests"
   },
   "scripts": {
-    //"test": "echo \"Error: no test specified\" && exit 1"
     "test": "jest"
   },
   "repository": {
@@ -19,5 +18,9 @@
   "bugs": {
     "url": "https://github.com/cpx86/protoactor-js/issues"
   },
-  "homepage": "https://github.com/cpx86/protoactor-js#readme"
+  "homepage": "https://github.com/cpx86/protoactor-js#readme",
+  "dependencies": {
+    "google-protobuf": "^3.2.0",
+    "grpc": "^1.2.0"
+  }
 }
