@@ -4,6 +4,7 @@ class ProcessRegistry {
     constructor() {
         this.localActorRefs = {}
         this.counter = 0
+        this.hostResolvers = []
     }
 
     Get(pid) {
@@ -22,6 +23,10 @@ class ProcessRegistry {
 
     Remove(pid) {
         this.localActorRefs[pid.ID] = undefined
+    }
+
+    RegisterHostResolver(resolver) {
+        this.hostResolvers.push(resolver)
     }
 }
 

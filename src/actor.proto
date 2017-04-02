@@ -1,4 +1,5 @@
 syntax = "proto3";
+package actor;
 
 message PID {
   string Address = 1;
