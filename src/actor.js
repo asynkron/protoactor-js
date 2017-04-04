@@ -39,5 +39,7 @@ module.exports = {
     fromFunc: fromFunc,
     fromProducer: fromProducer,
     spawn: spawn,
+    spawnPrefix: spawnPrefix,
+    spawnNamed: spawnNamed,
     done: Promise.resolve()
 }

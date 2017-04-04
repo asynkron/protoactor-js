@@ -5,6 +5,7 @@ class ProcessRegistry {
         this.localActorRefs = {}
         this.counter = 0
         this.hostResolvers = []
+        this.Address = "nonhost"
     }
 
     Get(pid) {
