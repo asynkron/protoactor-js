@@ -9,12 +9,21 @@ class ProcessRegistry {
     }
 
     Get(pid) {
-        return this.localActorRefs[pid.Id]
+        if (pid.Address != "nonhost" && pid.Address != this.Address) {
+            for(let resolver of this.hostResolvers) {
+                let ref = resolver(pid)
+                if (ref) {
+                    return ref
+                }
+            }
+            throw "Unknown host"
+        }
+        return this.localActorRefs[pid.getId()] // todo - deadletter
     }
 
     TryAdd(id, ref, pidCtor) {
         var pid = new pidCtor("local", id, ref)
-        this.localActorRefs[pid.Id] = ref
+        this.localActorRefs[pid.getId()] = ref
         return pid
     }
 
@@ -23,7 +32,7 @@ class ProcessRegistry {
     }
 
     Remove(pid) {
-        this.localActorRefs[pid.ID] = undefined
+        this.localActorRefs[pid.getId()] = undefined
     }
 
     RegisterHostResolver(resolver) {

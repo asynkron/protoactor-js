@@ -46,7 +46,7 @@ class Props {
         var mailbox = props.mailboxProducer()
         var dispatcher = props.dispatcher
         var ref = new LocalProcess(mailbox)
-        var pid = ProcessRegistry.TryAdd(name, ref, PID)
+        var pid = ProcessRegistry.TryAdd(name, ref, PID.New)
         context.Self = pid
         mailbox.RegisterHandlers(context, dispatcher)
         mailbox.PostSystemMessage(messages.Started)

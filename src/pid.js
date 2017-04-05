@@ -2,7 +2,7 @@
 
 var PromiseProcess = require('./promises')
 var ProcessRegistry = require('./processRegistry')
-var messages = require('./protos_pb')
+var messages = require('./actor_pb')
 
 messages.PID.New = function(address, id) {
     var pid = new messages.PID()

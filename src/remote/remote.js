@@ -1,5 +1,7 @@
 let grpc = require('grpc')
-let messages = require('./remote_pb')
+let pb = require('google-protobuf')
+let actorMessages = require('../actor_pb.js')
+let remoteMessages = require('./remote_pb')
 let services = require('./remote_grpc_pb')
 let ProcessRegistry = require('../processRegistry')
 let actor = require('../actor')
@@ -23,25 +25,75 @@ class EndpointReader {
             let target = PID.New(ProcessRegistry.Address, targetName)
             let sender = envelope.getSender()
             let typeName = typeNames[envelope.getTypeId()]
-            let message = Serialization.Deserialize(typeName, envelope.getMessageData())
-            console.log(message)
+            let message = remote.Serialization.Deserialize(typeName, envelope.getMessageData())
+            // todo - handle Terminated and SystemMessages
+            target.Request(message, sender)
         }
     }
 }
 
 class EndpointManager {
     Receive(context) {
-
+        // todo next
     }
 }
 
 class Activator {
     Receive(context) {
+        let msg = context.Message
+        if (msg instanceof remoteMessages.ActorPidRequest) {
+            let props = remote.GetKnownKind(msg.getKind())
+            let name = msg.getName()
+            if (!name) {
+                name = ProcessRegistry.NextId()
+            }
+            let pid = actor.spawnNamed(props, name)
+            let response = new remoteMessages.ActorPidResponse()
+            response.setPid(pid)
+            context.Respond(response)
+        }
+    }
+}
 
+class RemoteProcess {
+    constructor(pid) {
+        this.pid = pid
+    }
+
+    SendUserMessage(pid, message, sender) {
+        this._send(pid, message, sender)
+    }
+
+    SendSystemMessage(pid, message) {
+        this._send(pid, message, null)        
+    }
+
+    _send(pid, message, sender) {
+        // todo - handle watch/unwatch
+        
+        if (message instanceof pb.Message) {
+            let env = new RemoteDeliver(pid, message, sender)
+            remote.EndpointManager.Tell(message)
+        } else {
+            throw 'Message is not a protobuf message'
+        }
+    }
+}
+
+class RemoteDeliver {
+    constructor(target, message, sender) {
+        this.Message = message
+        this.Target = target
+        this.Sender = sender
     }
 }
 
 class Remote {
+    constructor() {
+        this.kinds = {}
+        this.Serialization = new Serialization()
+    }
+
     Start(host, port) {
         let addr = host + ':' + port
         ProcessRegistry.RegisterHostResolver(pid => new RemoteProcess(pid))
@@ -59,12 +111,22 @@ class Remote {
         this.EndpointManager = actor.spawn(actor.fromProducer(() => new EndpointManager()))
         this.Activator = actor.spawnNamed(actor.fromProducer(() => new Activator()), "activator")
     }
+
+    GetKnownKind(kind) {
+        return this.kinds[kind]
+    }
+
+    RegisterKnownKind(kind, props) {
+        this.kinds[kind] = props
+    }
 }
 
-Serialization  = {
-    typeLookup: {},
+class Serialization {
+    constructor() {
+        this.typeLookup = {}
+    }
     
-    RegisterTypes: function(packageName, types) {
+    RegisterTypes(packageName, types) {
         let keys = Object.keys(types)
         for(let i=0; i<keys.length; i++) {
             let key = keys[i]
@@ -72,18 +134,18 @@ Serialization  = {
             let type = types[key]
             this.typeLookup[typeName] = type
         }
-    },
+    }
 
-    Deserialize: function(typeName, bytes) {
+    Deserialize(typeName, bytes) {
         let parser = this.typeLookup[typeName]
         let o = parser.deserializeBinary(bytes)
         return o
     }
 }
-Serialization.RegisterTypes('remote', messages)
 
 let remote = new Remote()
+remote.Serialization.RegisterTypes('remote', remoteMessages)
 module.exports = remote
 
 // test
-remote.Start('localhost', 12000)
+//remote.Start('localhost', 12000)
