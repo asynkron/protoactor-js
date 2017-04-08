@@ -1,11 +1,12 @@
 let grpc = require('grpc')
 let pb = require('google-protobuf')
-let actorMessages = require('../actor_pb.js')
+let actorMessages = require('../messages')
 let remoteMessages = require('./remote_pb')
 let services = require('./remote_grpc_pb')
 let ProcessRegistry = require('../processRegistry')
 let actor = require('../actor')
 let PID = require('../pid')
+let Queue = require('../queue')
 
 class EndpointReader {
     Receive(call) {
@@ -33,8 +34,151 @@ class EndpointReader {
 }
 
 class EndpointManager {
+    constructor() {
+        this.connections = {}
+    }
+
     Receive(context) {
-        // todo next
+        let msg = context.Message
+        // todo - handle EndpointTerminatedEvent, RemoteTerminate, RemoteWatch, RemoteUnwatch
+        if (msg instanceof RemoteDeliver) {
+            let ep = this._ensureConnected(msg.Target.Address, context)
+            ep.Writer.Tell(msg)
+        }
+    }
+
+    _ensureConnected(address, context) {
+        let ep = this.connections[address]
+        if (!ep) {
+            let writer = this._spawnWriter(address, context)
+            let watcher = this._spawnWatcher(address, context)
+            ep = new Endpoint(writer, watcher)
+            this.connections[address] = ep
+        }
+        return ep
+    }
+
+    _spawnWriter(address, context) {
+        let props = actor.fromProducer(() => new EndpointWriter(address))
+            .WithMailbox(() => new EndpointWriterMailbox(1000))
+        let writer = actor.spawn(props)
+        return writer
+    }
+
+    _spawnWatcher(address, context) {
+        // todo
+        return null
+    }
+}
+
+class EndpointWriter {
+    constructor(address) {
+        this.address = address
+    }
+
+    async Receive(context) {
+        let msg = context.Message
+        if (msg === actorMessages.Started) {
+            await this._started()
+        }
+        if (msg instanceof RemoteDeliverArray) {
+            let messageBatch = new remoteMessages.MessageBatch()
+            let envelopes = []
+            let typeNameIds = {}
+            let targetIds = {}
+            let typeNames = []
+            let targetNames = []
+            for(rd in msg) {
+                let targetName = rd.Target.Id
+                if (targetNames.indexOf(targetName) < 0) {
+                    targetIds[targetName] = targetNames.length
+                    targetNames.push(targetName)
+                }
+                let targetId = targetIds[targetName]
+
+                //let typeName = get type name from protobuf?
+            }
+            await this._sendEnvelopes(messageBatch, context)
+        }
+    }
+
+    async _started() {
+        this.client = new services.RemotingClient(this.address, grpc.credentials.createInsecure())
+    }
+
+    async _sendEnvelopes(messageBatch, context) {
+
+    }
+}
+
+class RemoteDeliverArray extends Array {
+}
+
+class EndpointWriterMailbox {
+    constructor(batchSize) {
+        this.batchSize = batchSize
+        this.systemMessageQueue = new Queue()
+        this.userMessageQueue = new Queue()
+    }
+
+    async PostUserMessage(message) {
+        await this.userMessageQueue.enqueue(message)
+        this.processMessages()
+    }
+
+    async PostSystemMessage(message) {
+        await this.systemMessageQueue.enqueue(message)
+        this.processMessages()
+    }
+
+    RegisterHandlers(invoker, dispatcher) {
+        this.invoker = invoker
+        this.dispatcher = dispatcher
+    }
+
+    Start() {
+    }
+    
+    async processMessages() {
+        if (this.running) return
+
+        if (!this.systemMessageQueue.isEmpty() || !this.userMessageQueue.isEmpty()) {
+            this.schedule()
+        }
+    }
+
+    schedule() {
+        this.running = true;
+        this.dispatcher.Schedule(this.run.bind(this));
+    }
+
+    async run() {
+        let batch = new RemoteDeliverArray()
+        
+        let sys = this.systemMessageQueue.dequeue()
+        if (sys != undefined) {
+            await this.invoker.InvokeSystemMessage(sys)
+        }
+
+        while(batch.length<this.batchSize) {
+            let msg = this.userMessageQueue.dequeue()
+            if (!msg)
+                break
+            batch.push(msg)
+        }
+        await this.invoker.InvokeUserMessage(batch)
+        
+        this.running = false;
+        if (!this.systemMessageQueue.isEmpty() || !this.userMessageQueue.isEmpty()) {
+            this.schedule();
+        }
+    }
+}
+
+class Endpoint {
+    constructor(writer, watcher) {
+        this.Writer = writer
+        this.Watcher = watcher
     }
 }
 
@@ -73,7 +217,7 @@ class RemoteProcess {
         
         if (message instanceof pb.Message) {
             let env = new RemoteDeliver(pid, message, sender)
-            remote.EndpointManager.Tell(message)
+            remote.EndpointManager.Tell(env)
         } else {
             throw 'Message is not a protobuf message'
         }

@@ -37,6 +37,11 @@ class Props {
         return this
     }
 
+    WithMailbox(mailboxProducer) {
+        this.mailboxProducer = mailboxProducer
+        return this
+    }
+
     Spawn(name, parent) {
         return this.spawner(this, name, parent)
     }

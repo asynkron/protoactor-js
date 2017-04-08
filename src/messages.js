@@ -1,15 +1,11 @@
 "use strict"
 
+let pb = require('./actor_pb.js')
+
 class Started {}
-class Stop {}
 class Stopping {}
 class Restart {}
 class Restarting {}
-class Terminated {
-    constructor(who) {
-        this.Who =  who
-    }
-}
 
 class ResumeMailbox {}
 class SuspendMailbox {}
@@ -31,11 +27,11 @@ class Failure {
 
 module.exports = {
     Started: new Started(),
-    Stop: new Stop(),
     Stopping: new Stopping(),
     Restart: new Restart(),
     Restarting: new Restarting(),
-    Terminated: new Terminated(),
+    
     MessageSender: MessageSender,
     Failure: Failure
 }
+Object.assign(module.exports, pb)

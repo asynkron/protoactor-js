@@ -22,7 +22,7 @@ class ProcessRegistry {
     }
 
     TryAdd(id, ref, pidCtor) {
-        var pid = new pidCtor("local", id, ref)
+        var pid = new pidCtor("nonhost", id, ref)
         this.localActorRefs[pid.getId()] = ref
         return pid
     }
