@@ -1,7 +1,7 @@
 // test code below...
-
+var timeAction = require("./timeAction");
 var mailbox = require('../src/mailbox')
-
+var assert = require("assert");
 class Dispatcher {
     schedule(fn) {
         fn()
@@ -47,18 +47,10 @@ function Sleep(timeout) {
     });
 }
 
-async function test() {
-    var mb = mailbox.Unbounded()
-    mb.RegisterHandlers(new Invoker(), new Dispatcher())
-    var c = 1000*1000;
-    var hrstart = process.hrtime();
-    for(var i=0;i<c;i++) {
-        mb.PostUserMessage('hello')
-    }
-    var hr = process.hrtime(hrstart)
-    var s = hr[0] + hr[1]/(1000*1000*1000)
-    var t = c / s
-    console.log('sent', t/1000, 'K msg/s')
-}
+describe('mailbox', () => {
+    var mb = mailbox.Unbounded();
+    mb.RegisterHandlers(new Invoker(), new Dispatcher());
+    var mbActionTimer = timeAction(mb, 100 * 1000);
 
-test()
+    it('should have 200 K msg/s', () => assert(mbActionTimer(mb => mb.PostUserMessage("hello")) > 200))
+});
