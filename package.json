@@ -7,7 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "jest"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -22,5 +22,8 @@
   "dependencies": {
     "google-protobuf": "^3.2.0",
     "grpc": "^1.2.0"
+  },
+  "devDependencies": {
+    "mocha": "^3.3.0"
   }
 }
