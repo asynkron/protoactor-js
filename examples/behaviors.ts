@@ -1,14 +1,13 @@
-"use strict"
-
-var actor = require("../src/actor")
+import * as actor from "../src/actor";
+import { LocalContext } from "../src/localContext";
 
 class Hello {
-    constructor(who) {
-        this.Who = who
+    constructor(public Who: string) {
+        
     }
 }
 
-let helloBehavior = context => {
+let helloBehavior = (context: LocalContext) => {
     var msg = context.Message
     if (msg instanceof Hello) {
         console.log('Hello', msg.Who)
@@ -16,7 +15,7 @@ let helloBehavior = context => {
         context.PushBehavior(goodbyeBehavior)
     }
 }
-let goodbyeBehavior = context => {
+let goodbyeBehavior = (context: LocalContext) => {
     var msg = context.Message
     if (msg instanceof Hello) {
         console.log('I already said hello. Goodbye', msg.Who)

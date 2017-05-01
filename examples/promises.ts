@@ -1,9 +1,8 @@
-"use strict"
+import * as actor from "../src/actor";
+import { LocalContext } from "../src/localContext";
 
 async function run() {
-    var actor = require('../src/actor')
-
-    var props = actor.fromFunc(ctx => {
+    var props = actor.fromFunc((ctx: LocalContext) => {
         if (typeof ctx.Message == "string") {
             console.log('got message', ctx.Message)
             ctx.Respond("hey")

@@ -1,4 +1,4 @@
-const timeAction = (actionableObject, count) => action => {
+export const timeAction = <T>(actionableObject: T, count: number) => (action: (o: T) => void) => {
     var hrstart = process.hrtime();
     for(var i=0;i<count;i++) {
         action(actionableObject);
@@ -9,5 +9,3 @@ const timeAction = (actionableObject, count) => action => {
     console.info(`Got ${Math.round(t)}/s when running ${action.toString()} with ${actionableObject.constructor.name}`)
     return t/1000;
 }
-
-module.exports = timeAction

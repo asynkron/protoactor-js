@@ -8,14 +8,34 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${file}"
+            "program": "${file}",
+            "outFiles": ["${workspaceRoot}/dist/**/*.js"]
         },
         {
             "type": "node",
             "request": "attach",
-            "name": "Attach to Process",
+            "protocol": "inspector",
+            "name": "Attach to Port",
             "address": "localhost",
-            "port": 5858
+            "port": 5858,
+            "outFiles": []
+        },
+        {
+            "name": "Run mocha",
+            "type": "node",
+            "protocol": "inspector",
+            "request": "launch",
+            "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+            "stopOnEntry": false,
+            "args": [
+                " --opts test/mocha.opts",
+                "--no-timeouts"
+            ],
+            "cwd": "${workspaceRoot}",
+            "runtimeExecutable": null,
+            "env": {
+                "NODE_ENV": "testing"
+            }
         }
     ]
 }

@@ -1,10 +1,11 @@
-var assert = require("assert");
-var timeAction = require("./timeAction");
-var Queue = require('../src/queue')
-var Queue2 = require('../src/queue2')
+import * as assert from "assert";
+import { timeAction } from "./timeAction";
+import { Queue } from "../src/queue";
+import { Queue2 } from "../src/queue2";
 
-var queueTests = ctor => () => {
-  var queueAction;
+type QueueConstructor = (fn: (hej: Queue) => void) => number;
+var queueTests = (ctor: () => QueueConstructor) => () => {
+  var queueAction: QueueConstructor;
   beforeEach(() => queueAction = ctor())
 
   describe('enqueue', () => {

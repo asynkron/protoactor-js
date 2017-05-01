@@ -1,14 +1,13 @@
-"use strict"
-
-var actor = require("../src/actor")
+import * as actor from "../src/actor";
+import { LocalContext } from "../src/localContext";
 
 class Hello {
-    constructor(who) {
-        this.Who = who
+    constructor(public Who: string) {
+
     }
 }
 
-var props = actor.fromFunc(context => {
+var props = actor.fromFunc((context: LocalContext) => {
     var msg = context.Message
     if (msg instanceof Hello) {
         console.log('Hello', msg.Who)

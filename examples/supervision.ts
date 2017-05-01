@@ -1,40 +1,50 @@
-"use strict"
-
-var actor = require('../src/actor')
-var supervision = require('../src/supervision')
-var messages = require('../src/messages')
+import { IActor, fromProducer, spawn } from "../src/actor";
+import { OneForOneStrategy, IDecider, SupervisorDirective } from "../src/supervision";
+import * as messages from "../src/messages";
+import { LocalContext } from "../src/localContext";
 
 class Hello {
-    constructor(who) {
-        this.Who = who
+    constructor(public Who: string) {
+
     }
 }
-class Recoverable {}
-class Fatal {}
-class ParentActor {
-    Receive(ctx) {
+class Recoverable { }
+class Fatal { }
+class ParentActor implements IActor {
+    ToShortString(): string {
+        throw new Error("Method not implemented.");
+    }
+    Tell(message: messages.Message): void {
+        throw new Error("Method not implemented." + message);
+    }
+    Receive(ctx: LocalContext) {
         var child
         if (!ctx.Children || ctx.Children.length == 0) {
-            let props = actor.fromProducer(() => new ChildActor())
+            let props = fromProducer(() => new ChildActor())
             child = ctx.Spawn(props)
         } else {
             child = ctx.Children[0]
         }
         let msg = ctx.Message
-        if(msg instanceof Hello) {
+        if (msg instanceof Hello) {
             child.Tell(msg)
         }
-        if(msg instanceof Recoverable) {
+        if (msg instanceof Recoverable) {
             child.Tell(msg)
         }
-        if(msg instanceof Fatal) {
+        if (msg instanceof Fatal) {
             child.Tell(msg)
         }
-        return actor.done
     }
 }
-class ChildActor {
-    Receive (ctx) {
+class ChildActor implements IActor {
+    ToShortString(): string {
+        throw new Error("Method not implemented.");
+    }
+    Tell(message: messages.Message): void {
+        throw new Error("Method not implemented." + message);
+    }
+    Receive(ctx: LocalContext) {
         let msg = ctx.Message
         if (msg instanceof Hello) {
             console.log(ctx.Self.ToShortString(), 'Hello', msg.Who)
@@ -65,16 +75,17 @@ class ChildActor {
     }
 }
 
-var decider = (who, reason) => {
+var decider: IDecider = (who, reason) => {
     if (reason instanceof Recoverable)
-        return supervision.SupervisorDirective.Restart;
+        return SupervisorDirective.Restart;
     if (reason instanceof Fatal)
-        return supervision.SupervisorDirective.Stop;
-    return supervision.SupervisorDirective.Escalate;
+        return SupervisorDirective.Stop;
+    return SupervisorDirective.Escalate;
 }
-var props = actor.fromProducer(() => new ParentActor())
-    .WithSupervisor(new supervision.OneForOneStrategy(decider, 1, null));
-var pid = actor.spawn(props)
+var props = fromProducer(() => new ParentActor())
+    .WithSupervisor(new OneForOneStrategy(decider, 1));
+
+var pid = spawn(props)
 
 pid.Tell(new Hello("Christian"))
 
