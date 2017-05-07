@@ -1,11 +1,18 @@
 import { IProcess } from "./process";
-import { PromiseProcess} from "./promiseProcess";
+import { PromiseProcess } from "./promiseProcess";
 import processRegistry from "./processRegistry";
 import { Message } from "./messages";
-
-export class PID {
+import * as messages from "./actor_pb";
+export class PID extends messages.PID {
+    public static New = (address: string, id: string) => {
+        var pid = new messages.PID()
+        pid.Address = address
+        pid.Id = id
+        return pid;
+    }
     private PID: PID;
     constructor(public Address: string, public Id: string, private Ref: IProcess) {
+        super();
     }
 
     Tell(message: Message) {

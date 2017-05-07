@@ -1,5 +1,6 @@
 import { PID } from "./pid";
 import { RestartStatistics } from "./restartStatistics";
+export * from "./actor_pb.js";
 export type Message = {}
 export class Started { }
 export class Stop { }
@@ -26,4 +27,14 @@ export class Failure {
     constructor(public Who: PID, public Reason: string, public RestartStatistics: RestartStatistics) {
 
     }
+}
+
+module.exports = {
+    Started: new Started(),
+    Stopping: new Stopping(),
+    Restart: new Restart(),
+    Restarting: new Restarting(),
+    
+    MessageSender: MessageSender,
+    Failure: Failure
 }

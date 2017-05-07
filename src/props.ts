@@ -7,6 +7,7 @@ import { LocalProcess } from './localProcess';
 import {Unbounded, IMailbox} from "./mailbox";
 import { PID } from './pid';
 import { IActor } from "./actor";
+
 export interface ISpawner {
     (props: Props, name: string, parent?: PID): PID;
 }

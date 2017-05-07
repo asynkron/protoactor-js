@@ -1,0 +1,1 @@
+rm -rf generated && mkdir -p generated && protoc --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts --js_out=import_style=commonjs,binary:generated --ts_out=service=true:generated -I ./src src/actor.proto

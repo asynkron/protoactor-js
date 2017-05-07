@@ -1,8 +1,8 @@
 import * as grpc from "grpc";
 import * as pb from "google-protobuf";
 import * as messages from "../messages";
-import { remoteMessages } from "./remote_pb";
-import { services } from "./remote_grpc_pb";
+import * as remoteMessages from "./remote_pb";
+import * as services from "./remote_grpc_pb";
 import processRegistry from "../processRegistry";
 import { IProcess } from "../process";
 import * as actor from "../actor";
@@ -41,8 +41,7 @@ class EndpointReader {
             let envelope = envelopes[i]
             let targetName = targetNames[envelope.getTarget()]
             
-            // was PID.New, this doesnt exist. If its realy supposed to be undefined as Ref, PID wont do much good?
-            let target = new PID(processRegistry.Address, targetName)
+            let target = PID.New(processRegistry.Address, targetName)
             let sender = envelope.getSender()
             let typeName = typeNames[envelope.getTypeId()]
             let message = remote.Serialization.Deserialize(typeName, envelope.getMessageData())

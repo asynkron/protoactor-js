@@ -1,6 +1,6 @@
-let actor = require('../../src/actor')
-let remote = require('../../src/remote/remote')
-let messages = require('./messages_pb')
+import * as actor from "../../src/actor";
+import * as remote from "../../src/remote/remote";
+import * as messages from "./messages_pb";
 
 remote.Serialization.RegisterTypes('messages', messages)
 

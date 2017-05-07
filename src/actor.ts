@@ -6,7 +6,7 @@ import { Message } from "./messages"
 import { ISupervisor } from "./supervision";
 import { RestartStatistics } from "./restartStatistics";
 
-export function fromFunc(fn: Function) {
+export function fromFunc(fn: (context: LocalContext) => void) {
     return fromProducer(() => new EmptyActor(fn))
 }
 
@@ -35,7 +35,7 @@ class EmptyActor implements IActor {
     ToShortString(): string {
         throw new Error("Method not implemented.");
     }
-    constructor(private fn: Function) { }
+    constructor(private fn: (context: LocalContext) => void) { }
 
     Receive(context: LocalContext) {
         this.fn(context)
@@ -47,3 +47,5 @@ export interface IActor {
     HandleFailure?(supervisor: ISupervisor, child: PID, restartStatistics: RestartStatistics, reason: string): void;
     Tell(message: Message): void;
 }
+
+export const done = Promise.resolve();

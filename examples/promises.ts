@@ -1,8 +1,7 @@
 import * as actor from "../src/actor";
-import { LocalContext } from "../src/localContext";
 
 async function run() {
-    var props = actor.fromFunc((ctx: LocalContext) => {
+    var props = actor.fromFunc(ctx => {
         if (typeof ctx.Message == "string") {
             console.log('got message', ctx.Message)
             ctx.Respond("hey")

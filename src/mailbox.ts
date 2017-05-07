@@ -21,7 +21,9 @@ export class Mailbox implements IMailbox {
     private running = false;
     private dispatcher: Dispatcher;
     private invoker: IMessageInvoker;
-    constructor(private systemMessageQueue: IQueue, private userMessageQueue: IQueue, private mailboxStatistics: IStatistics[] = []) {
+    constructor(private systemMessageQueue: IQueue,
+        private userMessageQueue: IQueue,
+        private mailboxStatistics: IStatistics[] = []) {
 
     }
 

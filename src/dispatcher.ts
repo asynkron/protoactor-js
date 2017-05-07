@@ -1,10 +1,6 @@
 export class Dispatcher {
     throughput = 10;
 
-    constructor() {
-        
-    }
-
     Schedule(fn: Function) {
         fn()
     }

@@ -4,7 +4,7 @@ import processRegistry from "./processRegistry";
 import { IStrategy, ISupervisor } from "./supervision";
 import { RestartStatistics } from "./restartStatistics";
 import { PID } from "./pid";
-import { IActor } from "./actor";
+import { IActor, done } from "./actor";
 import {IMessageInvoker} from "./invoker";
 
 export class LocalContext implements IMessageInvoker {
@@ -12,7 +12,13 @@ export class LocalContext implements IMessageInvoker {
     private restartStatistics: RestartStatistics;
     private restarting: boolean;
     private stopping: boolean;
+    public Self: PID;
+    private Actor: IActor;
+    private _behavior: Function[] = [];
+    private _receive: Function;
 
+    Message: string | messages.Message;
+    Sender: PID;
     constructor(private producer: () => IActor, private supervisorStrategy: IStrategy, private Parent?: PID) {
         this._incarnateActor()
     }
@@ -33,7 +39,7 @@ export class LocalContext implements IMessageInvoker {
         if (message instanceof messages.Restart) {
             return this._handleRestart()
         }
-        return Promise.resolve()
+        return done;
     }
 
     InvokeUserMessage(message: messages.Message) {
@@ -86,15 +92,13 @@ export class LocalContext implements IMessageInvoker {
         var name = prefix + processRegistry.NextId()
         return this.SpawnNamed(props, name)
     }
-    public Self: PID;
+    
     SpawnNamed(props: Props, name: string) {
         var pid = props.Spawn(this.Self.Id + '/' + name, this.Self)
         this.Children.push(pid)
         return pid
     }
 
-    private _behavior: Function[] = [];
-    private _receive: Function;
 
     SetBehavior(receive: Function) {
         this._behavior = []
@@ -114,7 +118,6 @@ export class LocalContext implements IMessageInvoker {
         this._behavior.pop()
         this._receive = this._behavior[this._behavior.length - 1]
     }
-    private Actor: IActor;
     _incarnateActor() {
         this.Actor = this.producer()
         this.SetBehavior(this.Actor.Receive.bind(this.Actor))
@@ -179,8 +182,6 @@ export class LocalContext implements IMessageInvoker {
         processRegistry.Remove(this.Self)
         await this.InvokeUserMessage(messages.Stopped)
     }
-    Message: string | messages.Message;
-    Sender: PID;
     async _processMessage(message: messages.Message) {
         if (message instanceof messages.MessageSender) {
             this.Message = message.Message

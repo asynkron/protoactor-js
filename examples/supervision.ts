@@ -1,4 +1,4 @@
-import { IActor, fromProducer, spawn } from "../src/actor";
+import { IActor, fromProducer, spawn, done } from "../src/actor";
 import { OneForOneStrategy, IDecider, SupervisorDirective } from "../src/supervision";
 import * as messages from "../src/messages";
 import { LocalContext } from "../src/localContext";
@@ -35,6 +35,8 @@ class ParentActor implements IActor {
         if (msg instanceof Fatal) {
             child.Tell(msg)
         }
+
+        return done;
     }
 }
 class ChildActor implements IActor {
@@ -72,6 +74,8 @@ class ChildActor implements IActor {
         if (msg == messages.Restarting) {
             console.log(ctx.Self.ToShortString(), 'Restarting')
         }
+
+        return done;
     }
 }
 
