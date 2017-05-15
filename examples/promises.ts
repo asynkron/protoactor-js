@@ -1,8 +1,6 @@
-"use strict"
+import * as actor from "../src/actor";
 
 async function run() {
-    var actor = require('../src/actor')
-
     var props = actor.fromFunc(ctx => {
         if (typeof ctx.Message == "string") {
             console.log('got message', ctx.Message)

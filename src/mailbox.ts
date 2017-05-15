@@ -1,40 +1,55 @@
-"use strict"
+import { IQueue, Queue } from "./queue";
+import { Dispatcher } from "./dispatcher";
+import { IMessageInvoker } from "./invoker";
+import * as messages from "./messages"
+// import {Queue2} from "./queue2";
+export interface IStatistics {
+    UserMessagePosted(message: messages.Message): void;
+    SystemMessagePosted(message: messages.Message): void;
+    MailboxStarted(): void;
+    MailboxEmpty(): void;
+}
+export interface IMailbox {
+    PostUserMessage(message: messages.Message): Promise<void>
+    PostSystemMessage(message: messages.Message): Promise<void>
+    RegisterHandlers(invoker: IMessageInvoker, dispatcher: Dispatcher): void;
+    Start(): void;
+    schedule(): void;
+    run(): Promise<void>;
+}
+export class Mailbox implements IMailbox {
+    private running = false;
+    private dispatcher: Dispatcher;
+    private invoker: IMessageInvoker;
+    constructor(private systemMessageQueue: IQueue,
+        private userMessageQueue: IQueue,
+        private mailboxStatistics: IStatistics[] = []) {
 
-var Queue = require("./queue")
-var Queue2 = require("./queue2")
-
-class Mailbox {
-
-    constructor(systemMessageQueue, userMessageQueue, mailboxStatistics) {
-        this.systemMessageQueue = systemMessageQueue
-        this.userMessageQueue = userMessageQueue
-        this.mailboxStatistics = mailboxStatistics || []
-        this.running = false
     }
 
-    async PostUserMessage(message) {
-        for(var i=0; i<this.mailboxStatistics.length; i++) {
+    async PostUserMessage(message: messages.Message) {
+        for (var i = 0; i < this.mailboxStatistics.length; i++) {
             this.mailboxStatistics[i].UserMessagePosted(message)
         }
         await this.userMessageQueue.enqueue(message)
         this.processMessages()
     }
 
-    async PostSystemMessage(message) {
-        for(var i=0; i<this.mailboxStatistics.length; i++) {
+    async PostSystemMessage(message: messages.Message) {
+        for (var i = 0; i < this.mailboxStatistics.length; i++) {
             this.mailboxStatistics[i].SystemMessagePosted(message)
         }
         await this.systemMessageQueue.enqueue(message)
         this.processMessages()
     }
 
-    RegisterHandlers(invoker, dispatcher) {
+    RegisterHandlers(invoker: IMessageInvoker, dispatcher: Dispatcher) {
         this.invoker = invoker
         this.dispatcher = dispatcher
     }
 
     Start() {
-        for(var i=0; i<this.mailboxStatistics.length; i++) {
+        for (var i = 0; i < this.mailboxStatistics.length; i++) {
             this.mailboxStatistics[i].MailboxStarted()
         }
     }
@@ -68,14 +83,14 @@ class Mailbox {
                     break
                 }
             }
-        } catch(e) {
-            this.invoker.EscalateFailure(e, msg)
+        } catch (e) {
+            this.invoker.EscalateFailure(e)
         }
         this.running = false;
         if (!this.systemMessageQueue.isEmpty() || !this.userMessageQueue.isEmpty()) {
             this.schedule();
         } else {
-            for(var i=0; i<this.mailboxStatistics.length; i++) {
+            for (var i = 0; i < this.mailboxStatistics.length; i++) {
                 this.mailboxStatistics[i].MailboxEmpty()
             }
         }
@@ -96,11 +111,9 @@ class Mailbox {
     //     }
     // }
 
-    handleError(reason) {
-        
+    handleError(reason: string) {
+        throw "Not implemented, " + reason;
     }
 }
 
-module.exports = {
-    Unbounded: () => new Mailbox(new Queue(), new Queue())
-}
+export const Unbounded = () => new Mailbox(new Queue(), new Queue());

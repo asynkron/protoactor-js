@@ -7,7 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --opts test/mocha.opts -w"
   },
   "repository": {
     "type": "git",
@@ -19,11 +19,11 @@
     "url": "https://github.com/cpx86/protoactor-js/issues"
   },
   "homepage": "https://github.com/cpx86/protoactor-js#readme",
-  "dependencies": {
-    "google-protobuf": "^3.2.0",
-    "grpc": "^1.2.0"
-  },
   "devDependencies": {
-    "mocha": "^3.3.0"
+    "@types/mocha": "^2.2.41",
+    "@types/node": "^7.0.14",
+    "mocha": "^3.3.0",
+    "ts-node": "^3.0.2",
+    "typescript": "^2.3.1"
   }
 }

@@ -1,10 +1,8 @@
-"use strict"
-
-var actor = require("../src/actor")
+import * as actor from "../src/actor";
 
 class Hello {
-    constructor(who) {
-        this.Who = who
+    constructor(public Who: string) {
+
     }
 }
 
