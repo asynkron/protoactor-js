@@ -23,15 +23,15 @@ export class OneForOneStrategy implements IStrategy {
                 break;
             case SupervisorDirective.Restart:
                 if (this.requestRestartPermission(restartStatistics)) {
-                    console.log('Restarting', child.ToShortString(), 'Reason', reason)
+                    global.console.log('Restarting', child.ToShortString(), 'Reason', reason)
                     supervisor.RestartChildren(child)
                 } else {
-                    console.log('Stopping', child.ToShortString(), 'Reason', reason)
+                    global.console.log('Stopping', child.ToShortString(), 'Reason', reason)
                     supervisor.StopChildren(child)
                 }
                 break
             case SupervisorDirective.Stop:
-                console.log('Stopping', child.ToShortString(), 'Reason', reason)
+                global.console.log('Stopping', child.ToShortString(), 'Reason', reason)
                 supervisor.StopChildren(child)
                 break
             case SupervisorDirective.Escalate:

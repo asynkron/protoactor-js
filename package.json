@@ -25,5 +25,8 @@
     "mocha": "^3.3.0",
     "ts-node": "^3.0.2",
     "typescript": "^2.3.1"
+  },
+  "dependencies": {
+    "protobufjs": "^6.7.3"
   }
 }

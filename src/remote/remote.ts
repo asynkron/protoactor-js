@@ -1,8 +1,7 @@
 import * as grpc from "grpc";
 import * as pb from "google-protobuf";
 import * as messages from "../messages";
-import * as remoteMessages from "./remote_pb";
-import * as services from "./remote_grpc_pb";
+import * as remoteProto from "./remote_pb";
 import processRegistry from "../processRegistry";
 import { IProcess } from "../process";
 import * as actor from "../actor";
@@ -105,7 +104,7 @@ class EndpointWriter implements actor.IActor {
             await this._started()
         }
         if (message instanceof RemoteDeliverArray) {
-            let messageBatch = new remoteMessages.MessageBatch()
+            let messageBatch = new remoteProto.remote.MessageBatch()
             let targetIds: {[targetName: string]: number} = {}
             let targetNames = []
 
@@ -117,7 +116,7 @@ class EndpointWriter implements actor.IActor {
                 }
                 let targetId = targetIds[targetName]
                 
-                console.error("Not implemented, " + targetId);
+                global.console.error("Not implemented, " + targetId);
                 //let typeName = get type name from protobuf?
             }
             await this._sendEnvelopes(messageBatch, context)
@@ -129,7 +128,7 @@ class EndpointWriter implements actor.IActor {
         this.client = new services.RemotingClient(this.address, grpc.credentials.createInsecure())
     }
 
-    async _sendEnvelopes(messageBatch: IMessageBatch, context: LocalContext) {
+    async _sendEnvelopes(messageBatch: MessageBatch, context: LocalContext) {
 
     }
 }

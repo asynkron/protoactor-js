@@ -3,7 +3,7 @@ import { PromiseProcess } from "./promiseProcess";
 import processRegistry from "./processRegistry";
 import { Message } from "./messages";
 import * as messages from "./actor_pb";
-export class PID extends messages.PID {
+export class PID extends messages.actor.PID {
     public static New = (address: string, id: string) => {
         var pid = new messages.PID()
         pid.Address = address

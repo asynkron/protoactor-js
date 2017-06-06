@@ -13,14 +13,14 @@ export class PromiseProcess implements IProcess {
     private reject: (value?: string) => void;
 
     SendUserMessage(pid: PID, message: Message, sender?: PID) {
-        console.log(`PID:${pid.Id}, UserMessage:${message}, Sender:${sender && sender.ToShortString()}`)
+        global.console.log(`PID:${pid.Id}, UserMessage:${message}, Sender:${sender && sender.ToShortString()}`)
         this.resolve(message)
         return this.Promise;
         //this.PID.Stop()
     }
 
     SendSystemMessage(pid: PID, message: Message) {
-        console.log(`PID:${pid.Id}, SystemMessage:${message}`)
+        global.console.log(`PID:${pid.Id}, SystemMessage:${message}`)
         return Promise.resolve()
     }
 

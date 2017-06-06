@@ -51,7 +51,7 @@ export class LocalContext implements IMessageInvoker {
     }
 
     EscalateFailure(exception: string, message?: messages.Failure) {
-        console.log(`Failure ${exception}`, message);
+        global.console.log(`Failure ${exception}`, message);
         if (this.restartStatistics == undefined) {
             this.restartStatistics = new RestartStatistics()
         }
@@ -111,7 +111,7 @@ export class LocalContext implements IMessageInvoker {
     }
 
     PopBehavior(receive?: Function) {
-        console.log("is recieve necessary?", receive);
+        global.console.log("is recieve necessary?", receive);
         if (this._behavior.length <= 1) {
             throw "Cannot pop actor's last behavior"
         }
