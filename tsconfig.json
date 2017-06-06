@@ -17,6 +17,6 @@
     "module": "commonjs",
     "moduleResolution": "node",    
     "target": "es5",
-    "allowJs": true
+    "allowJs": false
   }
 }

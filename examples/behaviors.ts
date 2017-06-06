@@ -10,16 +10,16 @@ class Hello {
 let helloBehavior = (context: LocalContext) => {
     var msg = context.Message
     if (msg instanceof Hello) {
-        console.log('Hello', msg.Who)
-        console.log('changing to goodbye behavior')
+        global.console.log('Hello', msg.Who)
+        global.console.log('changing to goodbye behavior')
         context.PushBehavior(goodbyeBehavior)
     }
 }
 let goodbyeBehavior = (context: LocalContext) => {
     var msg = context.Message
     if (msg instanceof Hello) {
-        console.log('I already said hello. Goodbye', msg.Who)
-        console.log('reverting to previous behavior')
+        global.console.log('I already said hello. Goodbye', msg.Who)
+        global.console.log('reverting to previous behavior')
         context.PopBehavior()
     }
 }

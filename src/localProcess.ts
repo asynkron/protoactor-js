@@ -9,7 +9,6 @@ export class LocalProcess implements IProcess {
     }
 
     SendUserMessage(pid: PID, message: string, sender?: PID) {
-        global.console.log("SendUserMessage, PID: " + pid.Id);
         if (sender) {
             return this.Mailbox.PostUserMessage(new messages.MessageSender(message, sender))
         }
@@ -17,7 +16,6 @@ export class LocalProcess implements IProcess {
     }
 
     SendSystemMessage(pid: PID, message: messages.Message) {
-        global.console.log("SendSystemMessage, PID: " + pid.Id);
         return this.Mailbox.PostSystemMessage(message)
     }
 

@@ -9,7 +9,7 @@ class Hello {
 var props = actor.fromFunc(context => {
     var msg = context.Message
     if (msg instanceof Hello) {
-        console.log('Hello', msg.Who)
+        global.console.log('Hello', msg.Who)
     }
 });
 var pid = actor.spawn(props);

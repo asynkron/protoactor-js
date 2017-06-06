@@ -49,30 +49,30 @@ class ChildActor implements IActor {
     Receive(ctx: LocalContext) {
         let msg = ctx.Message
         if (msg instanceof Hello) {
-            console.log(ctx.Self.ToShortString(), 'Hello', msg.Who)
+            global.console.log(ctx.Self.ToShortString(), 'Hello', msg.Who)
         }
         if (msg instanceof Recoverable) {
-            console.log(ctx.Self.ToShortString(), 'Recoverable')
+            global.console.log(ctx.Self.ToShortString(), 'Recoverable')
             throw msg
         }
         if (msg instanceof Fatal) {
-            console.log(ctx.Self.ToShortString(), 'Fatal')
+            global.console.log(ctx.Self.ToShortString(), 'Fatal')
             throw msg
         }
         if (msg == messages.Started) {
-            console.log(ctx.Self.ToShortString(), 'Started')
+            global.console.log(ctx.Self.ToShortString(), 'Started')
         }
         if (msg == messages.Stopping) {
-            console.log(ctx.Self.ToShortString(), 'Stopping')
+            global.console.log(ctx.Self.ToShortString(), 'Stopping')
         }
         if (msg == messages.Stopped) {
-            console.log(ctx.Self.ToShortString(), 'Stopped')
+            global.console.log(ctx.Self.ToShortString(), 'Stopped')
         }
         if (msg == messages.Stopping) {
-            console.log(ctx.Self.ToShortString(), 'Stopping')
+            global.console.log(ctx.Self.ToShortString(), 'Stopping')
         }
         if (msg == messages.Restarting) {
-            console.log(ctx.Self.ToShortString(), 'Restarting')
+            global.console.log(ctx.Self.ToShortString(), 'Restarting')
         }
 
         return done;

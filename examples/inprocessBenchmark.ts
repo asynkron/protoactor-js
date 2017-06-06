@@ -5,4 +5,4 @@ tps.forEach(t => {
     var d = new Dispatcher()
     d.SetThroughput(t)
 })
-console.log("Done")
+global.console.log("Done")
