@@ -222,8 +222,9 @@ class Activator {
                 name = processRegistry.NextId()
             }
             let pid = actor.spawnNamed(props, name)
-            let response = new remoteProto.remote.ActorPidResponse()
-            response.pid = pid
+            let response = new remoteProto.remote.ActorPidResponse({
+                pid: pid
+            })
             context.Respond(response)
         }
     }
@@ -287,7 +288,7 @@ export class Remote {
 
         let server = new grpc.Server()
         let endpointReader = new EndpointReader()
-        server.addProtoService(RemoteService, {
+        server.addService(RemoteService, {
             receive: endpointReader.Receive.bind(endpointReader)
         })
         server.bind(addr, grpc.ServerCredentials.createInsecure())

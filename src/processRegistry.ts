@@ -20,8 +20,8 @@ export class ProcessRegistry {
         return this.localActorRefs[pid.Id] // todo - deadletter
     }
 
-    TryAdd(id: string, ref: IProcess, pidCtor: new (adress: string, id: string, ref: IProcess) => PID) {
-        var pid = new pidCtor("nonhost", id, ref);
+    TryAdd(id: string, ref: IProcess) {
+        var pid = new PID(this.Address, id);
         this.localActorRefs[pid.Id] = ref;
         return pid;
     }
