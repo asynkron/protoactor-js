@@ -8,6 +8,7 @@ let helloProps = actor.fromFunc(ctx => {
     let msg = ctx.Message
     if (msg instanceof pb.messages.HelloRequest) {
         let res = new pb.messages.HelloResponse()
+        console.log('Got hello request')
         res.Message = 'Hello from node 2'
         ctx.Respond(res)
     }

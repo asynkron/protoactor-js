@@ -1,4 +1,4 @@
-import * as grpc from "grpc";
+let grpc = require('grpc')
 import * as pb from "google-protobuf";
 import * as messages from "../messages";
 import * as remoteProto from "./remote_pb";
@@ -82,46 +82,63 @@ class EndpointManager implements actor.IActor {
 }
 
 class EndpointWriter implements actor.IActor {
+    private client: any;
+    private call: any;
     constructor(private address: string) {
         
     }
 
     async Receive(context: LocalContext) {
         let message = context.Message
-        if (message === messages.Started) {
+        if (message instanceof messages.Started) {
             await this._started()
         }
         if (message instanceof RemoteDeliverArray) {
-            let messageBatch = new remoteProto.remote.MessageBatch()
             let targetIds: {[targetName: string]: number} = {}
             let targetNames = []
+            let typeIds: {[typeName: string]: number} = {}
+            let typeNames = []
+            let batch = new remoteProto.remote.MessageBatch()
 
             for (let rd of message) {
                 let targetName = rd.Target.Id
-                if (targetNames.indexOf(targetName) < 0) {
+                if (batch.targetNames.indexOf(targetName) < 0) {
                     targetIds[targetName] = targetNames.length
-                    targetNames.push(targetName)
+                    batch.targetNames.push(targetName)
                 }
                 let targetId = targetIds[targetName]
                 
-                global.console.error("Not implemented, " + targetId);
-                //let typeName = get type name from protobuf?
+                //let typeName = rd.constructor.name;
+                let typeName = Serialization.LookupTypeName(rd.Message)
+                if (batch.typeNames.indexOf(typeName) < 0) {
+                    typeIds[typeName] = typeNames.length
+                    batch.typeNames.push(typeName)
+                }
+                let typeId = typeIds[typeName]
+
+                let bytes = Serialization.Serialize(rd.Message)
+                let envelope = new remoteProto.remote.MessageEnvelope()
+                batch.envelopes.push({
+                    messageData: bytes,
+                    sender: rd.Sender || new PID('', ''),
+                    target: targetId,
+                    typeId: typeId
+                })
             }
-            await this._sendEnvelopes(messageBatch, context)
+                        
+            await this._sendEnvelopes(batch, context)
         }
     }
 
-    private client: IRemotingClient;
     async _started() {
-        //this.client = new services.RemotingClient(this.address, grpc.credentials.createInsecure())
+        //let rpcImpl = new protobuf.Service('Remoting')        
+        this.client = new RemoteClient(this.address, grpc.credentials.createInsecure())
+        this.call = this.client.receive()
     }
 
     async _sendEnvelopes(messageBatch: remoteProto.remote.MessageBatch, context: LocalContext) {
-
+        this.call.write(messageBatch)
     }
-}
-interface IRemotingClient {
-
 }
 class RemoteDeliverArray extends Array<RemoteDeliver> {
 }
@@ -246,12 +263,19 @@ var RemoteService =  {
     responseStream: true,
     requestType: remoteProto.remote.MessageBatch,
     responseType: remoteProto.remote.Unit,
-    requestSerialize: remoteProto.remote.MessageBatch.encode,
+    requestSerialize: (message: remoteProto.remote.MessageBatch$Properties) => { 
+        let writer = remoteProto.remote.MessageBatch.encode(message)
+        return writer.finish()
+    },
     requestDeserialize: remoteProto.remote.MessageBatch.decode,
-    responseSerialize: remoteProto.remote.Unit.encode,
+    responseSerialize: (message: remoteProto.remote.Unit$Properties) => { 
+        let writer = remoteProto.remote.Unit.encode(message)
+        return writer.finish()
+    },
     responseDeserialize: remoteProto.remote.Unit.decode,
   },
 };
+var RemoteClient = grpc.makeGenericClientConstructor(RemoteService)
 
 export class Remote {
     static kinds: { [kind: string]: Props } = {}
@@ -303,6 +327,19 @@ export class Serialization {
         let reader = protobuf.Reader.create(bytes)
         let o = parser.decode(reader)
         return o
+    }
+
+    static LookupTypeName(type: any) : string {
+        let i = Object.values(this.typeLookup).indexOf(type.constructor)
+        let typeName = Object.keys(this.typeLookup)[i]
+        return typeName
+    }
+
+    static Serialize(message: any) : Uint8Array {
+        let encoder = message.constructor.encode
+        let writer = encoder(message)
+        let buffer = writer.finish()
+        return buffer
     }
 }
 
