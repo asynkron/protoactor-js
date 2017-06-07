@@ -11,12 +11,6 @@ class Request {
 var myProps = actor.fromProducer(() => new MyActor())
 
 class MyActor implements actor.IActor {
-    ToShortString(): string {
-        throw new Error("Method not implemented.");
-    }
-    Tell(message: Message): void {
-        throw new Error("Method not implemented.");
-    }
     Replies = 0;
     ReplyTo: PID | null = null;
     Sum = 0;

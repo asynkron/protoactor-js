@@ -11,12 +11,6 @@ class Hello {
 class Recoverable { }
 class Fatal { }
 class ParentActor implements IActor {
-    ToShortString(): string {
-        throw new Error("Method not implemented.");
-    }
-    Tell(message: messages.Message): void {
-        throw new Error("Method not implemented." + message);
-    }
     Receive(ctx: LocalContext) {
         var child
         if (!ctx.Children || ctx.Children.length == 0) {
@@ -40,12 +34,6 @@ class ParentActor implements IActor {
     }
 }
 class ChildActor implements IActor {
-    ToShortString(): string {
-        throw new Error("Method not implemented.");
-    }
-    Tell(message: messages.Message): void {
-        throw new Error("Method not implemented." + message);
-    }
     Receive(ctx: LocalContext) {
         let msg = ctx.Message
         if (msg instanceof Hello) {

@@ -1,30 +1,21 @@
-/*eslint-disable block-scoped-var, no-redeclare, no-control-regex, no-prototype-builtins*/
-"use strict";
+import * as $protobuf from "protobufjs";
 
-var $protobuf = require("protobufjs/minimal");
+/**
+ * Namespace messages.
+ * @exports messages
+ * @namespace
+ */
+export namespace messages {
 
-// Common aliases
-var $Reader = $protobuf.Reader, $Writer = $protobuf.Writer, $util = $protobuf.util;
-
-// Exported root namespace
-var $root = $protobuf.roots["default"] || ($protobuf.roots["default"] = {});
-
-$root.messages = (function() {
+    type HelloRequest$Properties = {};
 
     /**
-     * Namespace messages.
-     * @exports messages
-     * @namespace
+     * Constructs a new HelloRequest.
+     * @exports messages.HelloRequest
+     * @constructor
+     * @param {messages.HelloRequest$Properties=} [properties] Properties to set
      */
-    var messages = {};
-
-    messages.HelloRequest = (function() {
-
-        /**
-         * Properties of a HelloRequest.
-         * @typedef messages.HelloRequest$Properties
-         * @type {Object}
-         */
+    class HelloRequest {
 
         /**
          * Constructs a new HelloRequest.
@@ -32,21 +23,14 @@ $root.messages = (function() {
          * @constructor
          * @param {messages.HelloRequest$Properties=} [properties] Properties to set
          */
-        function HelloRequest(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
+        constructor(properties?: messages.HelloRequest$Properties);
 
         /**
          * Creates a new HelloRequest instance using the specified properties.
          * @param {messages.HelloRequest$Properties=} [properties] Properties to set
          * @returns {messages.HelloRequest} HelloRequest instance
          */
-        HelloRequest.create = function create(properties) {
-            return new HelloRequest(properties);
-        };
+        public static create(properties?: messages.HelloRequest$Properties): messages.HelloRequest;
 
         /**
          * Encodes the specified HelloRequest message. Does not implicitly {@link messages.HelloRequest.verify|verify} messages.
@@ -54,11 +38,7 @@ $root.messages = (function() {
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        HelloRequest.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            return writer;
-        };
+        public static encode(message: messages.HelloRequest$Properties, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
          * Encodes the specified HelloRequest message, length delimited. Does not implicitly {@link messages.HelloRequest.verify|verify} messages.
@@ -66,9 +46,7 @@ $root.messages = (function() {
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        HelloRequest.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
+        public static encodeDelimited(message: messages.HelloRequest$Properties, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
          * Decodes a HelloRequest message from the specified reader or buffer.
@@ -78,20 +56,7 @@ $root.messages = (function() {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        HelloRequest.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.messages.HelloRequest();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): messages.HelloRequest;
 
         /**
          * Decodes a HelloRequest message from the specified reader or buffer, length delimited.
@@ -100,33 +65,21 @@ $root.messages = (function() {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        HelloRequest.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): messages.HelloRequest;
 
         /**
          * Verifies a HelloRequest message.
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {?string} `null` if valid, otherwise the reason why it is not
          */
-        HelloRequest.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            return null;
-        };
+        public static verify(message: { [k: string]: any }): string;
 
         /**
          * Creates a HelloRequest message from a plain object. Also converts values to their respective internal types.
          * @param {Object.<string,*>} object Plain object
          * @returns {messages.HelloRequest} HelloRequest
          */
-        HelloRequest.fromObject = function fromObject(object) {
-            if (object instanceof $root.messages.HelloRequest)
-                return object;
-            return new $root.messages.HelloRequest();
-        };
+        public static fromObject(object: { [k: string]: any }): messages.HelloRequest;
 
         /**
          * Creates a HelloRequest message from a plain object. Also converts values to their respective internal types.
@@ -135,7 +88,7 @@ $root.messages = (function() {
          * @param {Object.<string,*>} object Plain object
          * @returns {messages.HelloRequest} HelloRequest
          */
-        HelloRequest.from = HelloRequest.fromObject;
+        public static from(object: { [k: string]: any }): messages.HelloRequest;
 
         /**
          * Creates a plain object from a HelloRequest message. Also converts values to other types if specified.
@@ -143,38 +96,33 @@ $root.messages = (function() {
          * @param {$protobuf.ConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        HelloRequest.toObject = function toObject() {
-            return {};
-        };
+        public static toObject(message: messages.HelloRequest, options?: $protobuf.ConversionOptions): { [k: string]: any };
 
         /**
          * Creates a plain object from this HelloRequest message. Also converts values to other types if specified.
          * @param {$protobuf.ConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        HelloRequest.prototype.toObject = function toObject(options) {
-            return this.constructor.toObject(this, options);
-        };
+        public toObject(options?: $protobuf.ConversionOptions): { [k: string]: any };
 
         /**
          * Converts this HelloRequest to JSON.
          * @returns {Object.<string,*>} JSON object
          */
-        HelloRequest.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
+        public toJSON(): { [k: string]: any };
+    }
 
-        return HelloRequest;
-    })();
+    type HelloResponse$Properties = {
+        Message?: string;
+    };
 
-    messages.HelloResponse = (function() {
-
-        /**
-         * Properties of a HelloResponse.
-         * @typedef messages.HelloResponse$Properties
-         * @type {Object}
-         * @property {string} [Message] HelloResponse Message.
-         */
+    /**
+     * Constructs a new HelloResponse.
+     * @exports messages.HelloResponse
+     * @constructor
+     * @param {messages.HelloResponse$Properties=} [properties] Properties to set
+     */
+    class HelloResponse {
 
         /**
          * Constructs a new HelloResponse.
@@ -182,27 +130,20 @@ $root.messages = (function() {
          * @constructor
          * @param {messages.HelloResponse$Properties=} [properties] Properties to set
          */
-        function HelloResponse(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
+        constructor(properties?: messages.HelloResponse$Properties);
 
         /**
          * HelloResponse Message.
          * @type {string}
          */
-        HelloResponse.prototype.Message = "";
+        public Message: string;
 
         /**
          * Creates a new HelloResponse instance using the specified properties.
          * @param {messages.HelloResponse$Properties=} [properties] Properties to set
          * @returns {messages.HelloResponse} HelloResponse instance
          */
-        HelloResponse.create = function create(properties) {
-            return new HelloResponse(properties);
-        };
+        public static create(properties?: messages.HelloResponse$Properties): messages.HelloResponse;
 
         /**
          * Encodes the specified HelloResponse message. Does not implicitly {@link messages.HelloResponse.verify|verify} messages.
@@ -210,13 +151,7 @@ $root.messages = (function() {
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        HelloResponse.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.Message != null && message.hasOwnProperty("Message"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.Message);
-            return writer;
-        };
+        public static encode(message: messages.HelloResponse$Properties, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
          * Encodes the specified HelloResponse message, length delimited. Does not implicitly {@link messages.HelloResponse.verify|verify} messages.
@@ -224,9 +159,7 @@ $root.messages = (function() {
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        HelloResponse.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
+        public static encodeDelimited(message: messages.HelloResponse$Properties, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
          * Decodes a HelloResponse message from the specified reader or buffer.
@@ -236,23 +169,7 @@ $root.messages = (function() {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        HelloResponse.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.messages.HelloResponse();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.Message = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): messages.HelloResponse;
 
         /**
          * Decodes a HelloResponse message from the specified reader or buffer, length delimited.
@@ -261,39 +178,21 @@ $root.messages = (function() {
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        HelloResponse.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): messages.HelloResponse;
 
         /**
          * Verifies a HelloResponse message.
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {?string} `null` if valid, otherwise the reason why it is not
          */
-        HelloResponse.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.Message != null && message.hasOwnProperty("Message"))
-                if (!$util.isString(message.Message))
-                    return "Message: string expected";
-            return null;
-        };
+        public static verify(message: { [k: string]: any }): string;
 
         /**
          * Creates a HelloResponse message from a plain object. Also converts values to their respective internal types.
          * @param {Object.<string,*>} object Plain object
          * @returns {messages.HelloResponse} HelloResponse
          */
-        HelloResponse.fromObject = function fromObject(object) {
-            if (object instanceof $root.messages.HelloResponse)
-                return object;
-            var message = new $root.messages.HelloResponse();
-            if (object.Message != null)
-                message.Message = String(object.Message);
-            return message;
-        };
+        public static fromObject(object: { [k: string]: any }): messages.HelloResponse;
 
         /**
          * Creates a HelloResponse message from a plain object. Also converts values to their respective internal types.
@@ -302,7 +201,7 @@ $root.messages = (function() {
          * @param {Object.<string,*>} object Plain object
          * @returns {messages.HelloResponse} HelloResponse
          */
-        HelloResponse.from = HelloResponse.fromObject;
+        public static from(object: { [k: string]: any }): messages.HelloResponse;
 
         /**
          * Creates a plain object from a HelloResponse message. Also converts values to other types if specified.
@@ -310,38 +209,19 @@ $root.messages = (function() {
          * @param {$protobuf.ConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        HelloResponse.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults)
-                object.Message = "";
-            if (message.Message != null && message.hasOwnProperty("Message"))
-                object.Message = message.Message;
-            return object;
-        };
+        public static toObject(message: messages.HelloResponse, options?: $protobuf.ConversionOptions): { [k: string]: any };
 
         /**
          * Creates a plain object from this HelloResponse message. Also converts values to other types if specified.
          * @param {$protobuf.ConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        HelloResponse.prototype.toObject = function toObject(options) {
-            return this.constructor.toObject(this, options);
-        };
+        public toObject(options?: $protobuf.ConversionOptions): { [k: string]: any };
 
         /**
          * Converts this HelloResponse to JSON.
          * @returns {Object.<string,*>} JSON object
          */
-        HelloResponse.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return HelloResponse;
-    })();
-
-    return messages;
-})();
-
-module.exports = $root;
+        public toJSON(): { [k: string]: any };
+    }
+}

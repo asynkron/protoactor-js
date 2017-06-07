@@ -142,7 +142,7 @@ export class LocalContext implements IMessageInvoker {
     }
 
     _handleFailure(failure: messages.Failure) {
-        var handleFailure = this.Actor.HandleFailure || this.supervisorStrategy.HandleFailure;
+        var handleFailure = this.supervisorStrategy.HandleFailure;
         handleFailure(this as any as ISupervisor, failure.Who, failure.RestartStatistics, failure.Reason);
     }
 

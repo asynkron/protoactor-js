@@ -29,12 +29,6 @@ export function spawnNamed(props: Props, name: string) {
 }
 
 class EmptyActor implements IActor {
-    Tell(message: Message): void {
-        throw new Error("Method not implemented." + message);
-    }
-    ToShortString(): string {
-        throw new Error("Method not implemented.");
-    }
     constructor(private fn: (context: LocalContext) => void) { }
 
     Receive(context: LocalContext) {
@@ -42,10 +36,7 @@ class EmptyActor implements IActor {
     }
 }
 export interface IActor {
-    ToShortString(): string;
     Receive(context: LocalContext): void;
-    HandleFailure?(supervisor: ISupervisor, child: PID, restartStatistics: RestartStatistics, reason: string): void;
-    Tell(message: Message): void;
 }
 
 export const done = Promise.resolve();

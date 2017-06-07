@@ -4,9 +4,6 @@ mkdir -p tmp
 pbjs='node_modules/protobufjs/cli/bin/pbjs -t static-module -w commonjs'
 pbts='node_modules/protobufjs/cli/bin/pbts'
 
-$pbjs -o dist/src/actor_pb.js src/actor.proto
-$pbts -o src/actor_pb.d.ts dist/src/actor_pb.js
-
-$pbjs -o dist/src/remote/remote_pb.js -p src src/remote/remote.proto
-$pbts -o src/remote/remote_pb.d.ts dist/src/remote/remote_pb.js
+$pbjs -o examples/remote/messages_pb.js examples/remote/messages.proto
+$pbts -o examples/remote/messages_pb.d.ts examples/remote/messages_pb.js
 

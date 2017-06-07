@@ -14,43 +14,33 @@ import { Dispatcher } from "../dispatcher";
 import { IMailbox } from "../mailbox";
 
 // TODO: Should be generated from *.proto ?
-interface IMessageBatch {
-    getTargetNamesList(): string[];
-    getTypeNamesList(): string[];
-    getEnvelopesList(): IEnvelope[];
-}
-interface IEnvelope{
-    getTarget(): number;
-    getSender(): PID;
-    getTypeId(): number;
-    getMessageData(): number[];
-}
 class EndpointReader {
-    Receive(call: { on(event: string, cb: (batch: IMessageBatch) => void): void }) {
+    Receive(call: { on(event: string, cb: (batch: remoteProto.remote.MessageBatch) => void): void }) {
         let self = this
         call.on('data', messageBatch => self._processMessageBatch(messageBatch))
     }
 
-    _processMessageBatch(messageBatch: IMessageBatch) {
-        let targetNames = messageBatch.getTargetNamesList()
-        let typeNames = messageBatch.getTypeNamesList()
-        let envelopes = messageBatch.getEnvelopesList()
+    _processMessageBatch(messageBatch: remoteProto.remote.MessageBatch) {
+        let targetNames = messageBatch.targetNames
+        let typeNames = messageBatch.typeNames
+        let envelopes = messageBatch.envelopes
 
         for (let i = 0; i < envelopes.length; i++) {
             let envelope = envelopes[i]
-            let targetName = targetNames[envelope.getTarget()]
+            let targetName = targetNames[envelope.target || -1]
             
             let target = PID.New(processRegistry.Address, targetName)
-            let sender = envelope.getSender()
-            let typeName = typeNames[envelope.getTypeId()]
-            let message = remote.Serialization.Deserialize(typeName, envelope.getMessageData())
+            let sender = envelope.sender
+            let typeName = typeNames[envelope.typeId || -1]
+
+            let message = Serialization.Deserialize(typeName, Array.from(envelope.messageData||[]))
             // todo - handle Terminated and SystemMessages
-            target.Request(message, sender)
+            //target.Request(message, sender)
         }
     }
 }
 
-class EndpointManager {
+class EndpointManager implements actor.IActor {
     
     connections: {[adress: string]: Endpoint } = {}
     Receive(context: LocalContext) {
@@ -87,13 +77,6 @@ class EndpointManager {
 }
 
 class EndpointWriter implements actor.IActor {
-    ToShortString(): string {
-        throw new Error('Method not implemented.');
-    }
-    Tell(message: messages.Message): void {
-        throw new Error('Method not implemented.' + message);
-    }
-
     constructor(private address: string) {
         
     }
@@ -125,10 +108,10 @@ class EndpointWriter implements actor.IActor {
 
     private client: IRemotingClient;
     async _started() {
-        this.client = new services.RemotingClient(this.address, grpc.credentials.createInsecure())
+        //this.client = new services.RemotingClient(this.address, grpc.credentials.createInsecure())
     }
 
-    async _sendEnvelopes(messageBatch: MessageBatch, context: LocalContext) {
+    async _sendEnvelopes(messageBatch: remoteProto.remote.MessageBatch, context: LocalContext) {
 
     }
 }
@@ -210,15 +193,15 @@ class Endpoint {
 class Activator {
     Receive(context: LocalContext) {
         let msg = context.Message
-        if (msg instanceof remoteMessages.ActorPidRequest) {
-            let props = remote.GetKnownKind(msg.getKind())
-            let name = msg.getName()
+        if (msg instanceof remoteProto.remote.ActorPidRequest) {
+            let props = Remote.GetKnownKind(msg.kind)
+            let name = msg.name
             if (!name) {
                 name = processRegistry.NextId()
             }
             let pid = actor.spawnNamed(props, name)
-            let response = new remoteMessages.ActorPidResponse()
-            response.setPid(pid)
+            let response = new remoteProto.remote.ActorPidResponse()
+            response.pid = pid
             context.Respond(response)
         }
     }
@@ -242,7 +225,7 @@ class RemoteProcess implements IProcess {
 
         if (message instanceof pb.Message) {
             let env = new RemoteDeliver(pid, message, sender)
-            remote.EndpointManager.Tell(env)
+            Remote.EndpointManager.Tell(env)
         } else {
             throw 'Message is not a protobuf message'
         }
@@ -255,18 +238,32 @@ class RemoteDeliver {
     }
 }
 
-class Remote {
-    kinds: { [kind: string]: Props } = {}
-    Serialization = new Serialization()
-    EndpointManager: PID;
-    Activator: PID;
-    Start(host: string, port: number) {
+var RemoteService =  {
+  // Sends a greeting
+  receive: {
+    path: '/remote.Remoting/Receive',
+    requestStream: true,
+    responseStream: true,
+    requestType: remoteProto.remote.MessageBatch,
+    responseType: remoteProto.remote.Unit,
+    requestSerialize: remoteProto.remote.MessageBatch.encode,
+    requestDeserialize: remoteProto.remote.MessageBatch.decode,
+    responseSerialize: remoteProto.remote.Unit.encode,
+    responseDeserialize: remoteProto.remote.Unit.decode,
+  },
+};
+
+export class Remote {
+    static kinds: { [kind: string]: Props } = {}
+    static EndpointManager: PID;
+    static Activator: PID;
+    static Start(host: string, port: number) {
         let addr = host + ':' + port
         processRegistry.RegisterHostResolver(pid => new RemoteProcess())
 
         let server = new grpc.Server()
         let endpointReader = new EndpointReader()
-        server.addService(services.RemotingService, {
+        server.addProtoService(RemoteService, {
             receive: endpointReader.Receive.bind(endpointReader)
         })
         server.bind(addr, grpc.ServerCredentials.createInsecure())
@@ -278,39 +275,37 @@ class Remote {
         this.Activator = actor.spawnNamed(actor.fromProducer(() => new Activator()), "activator")
     }
 
-    GetKnownKind(kind: string) {
+    static GetKnownKind(kind: string) {
         return this.kinds[kind]
     }
 
-    RegisterKnownKind(kind: string, props: Props) {
+    static RegisterKnownKind(kind: string, props: Props) {
         this.kinds[kind] = props
     }
 }
 
 type Parser = { deserializeBinary(bytes: number[]): object }
-class Serialization {
-    private typeLookup: { [index: string]: Parser } = {}
+export class Serialization {
+    private static typeLookup: { [index: string]: Parser } = {}
 
-    RegisterTypes(packageName: string, types) {
+    static RegisterTypes(packageName: string, types: any) {
         let keys = Object.keys(types)
         for (let i = 0; i < keys.length; i++) {
             let key = keys[i]
-            let typeName = packageName + '.' + key
             let type = types[key]
+            let typeName = packageName + '.' + type.name
             this.typeLookup[typeName] = type
         }
     }
 
-    Deserialize(typeName: string, bytes: number[]) {
+    static Deserialize(typeName: string, bytes: number[]) {
         let parser = this.typeLookup[typeName]
         let o = parser.deserializeBinary(bytes)
         return o
     }
 }
 
-let remote = new Remote()
-remote.Serialization.RegisterTypes('remote', remoteMessages)
-module.exports = remote
+Serialization.RegisterTypes('remote', remoteProto.remote)
 
 // test
 //remote.Start('localhost', 12000)

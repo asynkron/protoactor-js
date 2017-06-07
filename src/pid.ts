@@ -3,9 +3,10 @@ import { PromiseProcess } from "./promiseProcess";
 import processRegistry from "./processRegistry";
 import { Message } from "./messages";
 import * as messages from "./actor_pb";
+
 export class PID extends messages.actor.PID {
     public static New = (address: string, id: string) => {
-        var pid = new messages.PID()
+        var pid = new messages.actor.PID()
         pid.Address = address
         pid.Id = id
         return pid;
