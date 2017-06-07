@@ -21,6 +21,8 @@ export class RestartStatistics implements IRestartStatistics {
     }
 
     IsWithinDuration(withinMs: number) {
+        if (this.LastFailureTime==undefined)
+            return true
         return (new Date().getTime() - this.LastFailureTime.getTime()) < withinMs;
     }
 }

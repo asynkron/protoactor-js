@@ -3,42 +3,53 @@ import { PromiseProcess } from "./promiseProcess";
 import processRegistry from "./processRegistry";
 import { Message } from "./messages";
 import * as messages from "./actor_pb";
+import { LocalProcess } from "./localProcess"
 
 export class PID extends messages.actor.PID {
-    public static New = (address: string, id: string) => {
-        var pid = new messages.actor.PID()
-        pid.Address = address
-        pid.Id = id
-        return pid;
-    }
-    private PID: PID;
-    constructor(public Address: string, public Id: string, private Ref: IProcess) {
+    private _p:IProcess|undefined;
+    constructor(public Address: string, public Id: string) {
         super();
     }
 
+    get Ref():IProcess|undefined {
+        let p = this._p;
+        if (p) {
+            if (p instanceof LocalProcess && p.IsDead) {
+                this._p = undefined;
+            }
+            return this._p
+        } else {
+            let reff = processRegistry.Get(this)
+            this._p = reff
+            return this._p
+        }
+    }
+
     Tell(message: Message) {
-        return this.Ref.SendUserMessage(this, message)
+        let reff = this.Ref || processRegistry.Get(this)
+        return reff.SendUserMessage(this, message)
     }
 
     SendSystemMessage(message: Message) {
-        return this.Ref.SendSystemMessage(this, message)
+        let reff = this.Ref || processRegistry.Get(this)
+        return reff.SendSystemMessage(this, message)
     }
 
     RequestPromise(message: Message) {
         var p = new PromiseProcess()
         var name = processRegistry.NextId()
-        this.PID = processRegistry.TryAdd(name, p, PID)
-        p.PID = this.PID
         this.Request(message, p.PID)
         return p.Promise;
     }
 
     Request(message: Message, sender: PID) {
-        this.Ref.SendUserMessage(this, message, sender)
+        let reff = this.Ref || processRegistry.Get(this)
+        reff.SendUserMessage(this, message, sender)
     }
 
     Stop() {
-        this.Ref.Stop()
+        let reff = this.Ref || processRegistry.Get(this)
+        reff.Stop()
         processRegistry.Remove(this)
     }
 

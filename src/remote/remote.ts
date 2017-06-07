@@ -12,6 +12,7 @@ import { LocalContext } from "../localContext";
 import { IMessageInvoker } from "../invoker";
 import { Dispatcher } from "../dispatcher";
 import { IMailbox } from "../mailbox";
+import * as protobuf from "protobufjs";
 
 // TODO: Should be generated from *.proto ?
 class EndpointReader {
@@ -27,15 +28,19 @@ class EndpointReader {
 
         for (let i = 0; i < envelopes.length; i++) {
             let envelope = envelopes[i]
-            let targetName = targetNames[envelope.target || -1]
+            if (envelope.messageData==undefined || envelope.sender==undefined || envelope.target==undefined || envelope.typeId==undefined) {
+                console.error('Invalid envelope!')
+                continue;
+            }
+            let targetName = targetNames[envelope.target || 0]
             
-            let target = PID.New(processRegistry.Address, targetName)
-            let sender = envelope.sender
-            let typeName = typeNames[envelope.typeId || -1]
+            let target = new PID(processRegistry.Address, targetName)
+            let sender = new PID(envelope.sender.Address || '', envelope.sender.Id || '')
+            let typeName = typeNames[envelope.typeId || 0]
 
-            let message = Serialization.Deserialize(typeName, Array.from(envelope.messageData||[]))
+            let message = Serialization.Deserialize(typeName, envelope.messageData||new Uint8Array(0))
             // todo - handle Terminated and SystemMessages
-            //target.Request(message, sender)
+            target.Request(message, sender)
         }
     }
 }
@@ -212,28 +217,23 @@ class RemoteProcess implements IProcess {
         throw new Error('Method not implemented.');
     }
 
-    SendUserMessage(pid: PID, message: messages.Message, sender?: PID) {
+    SendUserMessage(pid: PID, message: any, sender?: PID) {
         this._send(pid, message, sender)
     }
 
-    SendSystemMessage(pid: PID, message: messages.Message) {
+    SendSystemMessage(pid: PID, message: any) {
         this._send(pid, message)
     }
 
-    _send(pid: PID, message: messages.Message, sender?: PID) {
+    _send(pid: PID, message: any, sender?: PID) {
         // todo - handle watch/unwatch
-
-        if (message instanceof pb.Message) {
-            let env = new RemoteDeliver(pid, message, sender)
-            Remote.EndpointManager.Tell(env)
-        } else {
-            throw 'Message is not a protobuf message'
-        }
+        let env = new RemoteDeliver(pid, message, sender)
+        Remote.EndpointManager.Tell(env)
     }
 }
 
 class RemoteDeliver {
-    constructor(public Target: PID, public Message: messages.Message, public Sender?: PID) {
+    constructor(public Target: PID, public Message: any, public Sender?: PID) {
 
     }
 }
@@ -286,7 +286,7 @@ export class Remote {
 
 type Parser = { deserializeBinary(bytes: number[]): object }
 export class Serialization {
-    private static typeLookup: { [index: string]: Parser } = {}
+    private static typeLookup: { [index: string]: any } = {}
 
     static RegisterTypes(packageName: string, types: any) {
         let keys = Object.keys(types)
@@ -298,9 +298,10 @@ export class Serialization {
         }
     }
 
-    static Deserialize(typeName: string, bytes: number[]) {
+    static Deserialize(typeName: string, bytes: Uint8Array) {
         let parser = this.typeLookup[typeName]
-        let o = parser.deserializeBinary(bytes)
+        let reader = protobuf.Reader.create(bytes)
+        let o = parser.decode(reader)
         return o
     }
 }

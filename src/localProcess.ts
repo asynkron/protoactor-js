@@ -4,6 +4,7 @@ import { IProcess } from "./process";
 import * as messages from "./messages";
 
 export class LocalProcess implements IProcess {
+    public IsDead:boolean
     constructor(private Mailbox: IMailbox) {
 
     }
