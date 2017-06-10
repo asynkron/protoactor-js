@@ -1,6 +1,6 @@
 import { PID } from "./pid";
 import { RestartStatistics } from "./restartStatistics";
-export * from "./actor_pb.js";
+export * from "./actor_pb";
 
 export type Message = {}
 export class Started { }

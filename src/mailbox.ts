@@ -14,8 +14,6 @@ export interface IMailbox {
     PostSystemMessage(message: messages.Message): Promise<void>
     RegisterHandlers(invoker: IMessageInvoker, dispatcher: Dispatcher): void;
     Start(): void;
-    schedule(): void;
-    run(): Promise<void>;
 }
 export class Mailbox implements IMailbox {
     private running = false;

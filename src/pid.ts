@@ -36,9 +36,10 @@ export class PID extends messages.actor.PID {
     }
 
     RequestPromise(message: Message) {
-        var p = new PromiseProcess()
-        var name = processRegistry.NextId()
-        this.Request(message, p.PID)
+        let p = new PromiseProcess()
+        let id = processRegistry.NextId()
+        let pid = processRegistry.TryAdd(id, p)
+        this.Request(message, pid)
         return p.Promise;
     }
 

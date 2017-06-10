@@ -1,2 +1,1 @@
---compilers ts:ts-node/register
-test/**/*Tests.ts
+dist/test/**/*Tests.js

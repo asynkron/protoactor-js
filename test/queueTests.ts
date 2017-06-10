@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { timeAction } from "./timeAction";
+import { timeAction } from "./util/timeAction";
 import { Queue } from "../src/queue";
 import { Queue2 } from "../src/queue2";
 

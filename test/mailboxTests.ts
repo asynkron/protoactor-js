@@ -1,4 +1,4 @@
-import { timeAction } from "./timeAction";
+import { timeAction } from "./util/timeAction";
 import { Message } from "../src/messages";
 import { Unbounded } from "../src/mailbox";
 import { IMessageInvoker } from "../src/invoker";
@@ -42,5 +42,5 @@ describe('mailbox', () => {
     mb.RegisterHandlers(new Invoker(), new Dispatcher());
     var mbActionTimer = timeAction(mb, 100 * 1000);
 
-    it('should have 200 K msg/s', () => assert(mbActionTimer(mb => mb.PostUserMessage("hello")) > 200))
+    it('should have >100 K msg/s', () => assert(mbActionTimer(mb => mb.PostUserMessage("hello")) > 100))
 });
