@@ -16,11 +16,7 @@ class MyActor implements actor.IActor {
     Sum = 0;
 
     async Receive(context: LocalContext) {
-        // await new Promise((resolve, reject) => {
-        //     setTimeout(resolve, 0)
-        // })
         var message = context.Message
-        //global.console.log(msg)
         if (message instanceof Request) {
             if (message.Size == 1) {
                 context.Respond(message.Num)
@@ -36,11 +32,9 @@ class MyActor implements actor.IActor {
                 var div = message.Div
                 child.Request(new Request(div, num, size), context.Self)
             }
-            // if (++c % 1000 == 0)
-            //     global.console.log(new Date(), c, msg)
             return
         }
-        if (Number(message) !== NaN) {
+        if (typeof(message) === 'number') {
             this.Sum += Number(message)
             this.Replies--
             if (this.Replies == 0 && this.ReplyTo) {
@@ -55,7 +49,7 @@ async function run() {
     var pid = actor.spawn(myProps)
     global.console.log('starting')
     var hrstart = process.hrtime();
-    var response = await pid.RequestPromise(new Request(10, 0, 10 * 1000)) // should be 1M but node can't handle it - runs out of memory
+    var response = await pid.RequestPromise(new Request(10, 0, 100 * 1000)) // should be 1M but node can't handle it - runs out of memory
     global.console.log(response)
     var hr = process.hrtime(hrstart)
     var s = hr[0] + hr[1] / (1000 * 1000 * 1000)
