@@ -2,7 +2,10 @@ import * as actor from "../src/actor"
 import {PID} from "../src/pid"
 import processRegistry from "../src/processRegistry"
 import * as messages from "../src/messages"
-import {assert} from "chai"
+import {assert, expect, use as chaiUse} from "chai"
+import * as chaiAsPromised from "chai-as-promised"
+
+chaiUse(chaiAsPromised)
 
 class Awaiter {
     public promise: Promise<void>
@@ -29,8 +32,9 @@ describe('actor', () => {
             })
         )
         await aw.promise
-        assert.equal(received.length, 1)
-        assert(received[0] instanceof messages.Started)
+        assert.sameDeepMembers(received, [
+            messages.Started.Instance
+        ])
     })
 
     it('should receive Stopping and Stopped message when stopped', async () => {
@@ -69,8 +73,9 @@ describe('actor', () => {
         );
         await pid.Tell('hello')
         await aw.promise
-        assert.equal(received.length, 1)
-        assert.equal(received[0], 'hello')
+         assert.sameDeepMembers(received, [
+            'hello'
+        ])
     })
     
     it('should respond with message when using RequestPromise', async () => {
@@ -86,13 +91,21 @@ describe('actor', () => {
         assert.equal(res, 'hey')
     })
 
+    it('should raise timeout if no response is sent when using RequestPromise', async () => {
+        let pid = await actor.spawn(
+            actor.fromFunc(context => { })
+        );
+        
+        await assert.isRejected(pid.RequestPromise('hello', 10))
+    })
+
     it('should be added to ProcessRegistry when spawned', async () => {
         let pid = await actor.spawn(
             actor.fromFunc(context => {})
         );
-        pid.Stop()
         let reff = processRegistry.Get(pid)
-        assert(!reff)
+        assert.isDefined(reff)
+        assert.isNotNull(reff)
     })
     
     it('should be removed from ProcessRegistry when stopped', async () => {
@@ -101,7 +114,7 @@ describe('actor', () => {
         );
         pid.Stop()
         let reff = processRegistry.Get(pid)
-        assert(!reff)
+        assert.isUndefined(reff)
     })
     
     

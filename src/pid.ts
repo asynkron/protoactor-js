@@ -35,8 +35,8 @@ export class PID extends messages.actor.PID {
         return reff.SendSystemMessage(this, message)
     }
 
-    RequestPromise(message: Message) {
-        let p = new PromiseProcess()
+    RequestPromise(message: Message, timeoutMs: number = 0) {
+        let p = new PromiseProcess(timeoutMs)
         let id = processRegistry.NextId()
         let pid = processRegistry.TryAdd(id, p)
         this.Request(message, pid)

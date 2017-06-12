@@ -1,13 +1,29 @@
-import { PID } from "./pid";
-import { Message } from "./messages";
-import { IProcess } from "./process";
+import { PID } from "./pid"
+import { Message } from "./messages"
+import { IProcess } from "./process"
 
 export class PromiseProcess implements IProcess {
-    public PID: PID;
-    public Promise = new Promise<Message>((resolve, reject) => {
-        this.resolve = resolve;
-        this.reject = reject;
-    });
+    public PID: PID
+    public Promise: Promise<any>
+    private timer: any
+    private resolved: boolean
+
+    constructor(timeoutMs: number) { 
+        this.Promise = new Promise<Message>((resolve, reject) => {
+            this.resolve = value => {
+                this.resolved = true
+                resolve(value)
+            };
+            this.reject = reject;
+            if(timeoutMs) {
+                this.timer = setTimeout(() => {
+                    if (!this.resolved) {
+                        reject(`Requested promise timed out after ${timeoutMs} ms.`)
+                    }
+                }, timeoutMs)
+            }
+        });
+    }
 
     private resolve: (value?: Message) => void;
     private reject: (value?: string) => void;

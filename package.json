@@ -21,9 +21,11 @@
   "homepage": "https://github.com/cpx86/protoactor-js#readme",
   "devDependencies": {
     "@types/chai": "^4.0.0",
+    "@types/chai-as-promised": "0.0.31",
     "@types/mocha": "^2.2.41",
     "@types/node": "^7.0.14",
     "chai": "^4.0.2",
+    "chai-as-promised": "^7.0.0",
     "mocha": "^3.3.0",
     "ts-node": "^3.0.2",
     "typescript": "^2.3.1"
