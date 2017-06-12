@@ -11,23 +11,23 @@ class Hello {
 class Recoverable { }
 class Fatal { }
 class ParentActor implements IActor {
-    Receive(ctx: LocalContext) {
+    async Receive(ctx: LocalContext) {
         var child
         if (!ctx.Children || ctx.Children.length == 0) {
             let props = fromProducer(() => new ChildActor())
-            child = ctx.Spawn(props)
+            child = await ctx.Spawn(props)
         } else {
             child = ctx.Children[0]
         }
         let msg = ctx.Message
         if (msg instanceof Hello) {
-            child.Tell(msg)
+            await child.Tell(msg)
         }
         if (msg instanceof Recoverable) {
-            child.Tell(msg)
+            await child.Tell(msg)
         }
         if (msg instanceof Fatal) {
-            child.Tell(msg)
+            await child.Tell(msg)
         }
 
         return done;
