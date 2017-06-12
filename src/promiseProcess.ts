@@ -15,7 +15,7 @@ export class PromiseProcess implements IProcess {
     SendUserMessage(pid: PID, message: Message, sender?: PID) {
         this.resolve(message)
         return this.Promise;
-        this.PID.Stop()
+        //this.PID.Stop()
     }
 
     SendSystemMessage(pid: PID, message: Message) {

@@ -74,12 +74,16 @@ var decider: IDecider = (who, reason) => {
         return SupervisorDirective.Stop;
     return SupervisorDirective.Escalate;
 }
-var props = fromProducer(() => new ParentActor())
-    .WithSupervisor(new OneForOneStrategy(decider, 1));
 
-var pid = spawn(props)
+async function run() {
+    var props = fromProducer(() => new ParentActor())
+        .WithSupervisor(new OneForOneStrategy(decider, 1));
 
-pid.Tell(new Hello("Christian"))
+    var pid = await spawn(props)
 
-pid.Tell(new Recoverable())
-pid.Tell(new Fatal())
+    pid.Tell(new Hello("Christian"))
+    pid.Tell(new Recoverable())
+    pid.Tell(new Fatal())
+}
+
+run()

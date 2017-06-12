@@ -48,34 +48,34 @@ class EndpointReader {
 class EndpointManager implements actor.IActor {
     
     connections: {[adress: string]: Endpoint } = {}
-    Receive(context: LocalContext) {
+    async Receive(context: LocalContext) {
         let msg = context.Message
         // todo - handle EndpointTerminatedEvent, RemoteTerminate, RemoteWatch, RemoteUnwatch
         if (msg instanceof RemoteDeliver) {
-            let ep = this._ensureConnected(msg.Target.Address, context)
+            let ep = await this._ensureConnected(msg.Target.Address, context)
             ep.Writer.Tell(msg)
         }
     }
 
-    _ensureConnected(address: string, context: LocalContext) {
+    async _ensureConnected(address: string, context: LocalContext) {
         let ep = this.connections[address]
         if (!ep) {
-            let writer = this._spawnWriter(address, context)
-            let watcher = this._spawnWatcher(address, context)
+            let writer = await this._spawnWriter(address, context)
+            let watcher = await this._spawnWatcher(address, context)
             ep = new Endpoint(writer, watcher)
             this.connections[address] = ep
         }
         return ep
     }
 
-    _spawnWriter(address: string, context: LocalContext) {
+    async _spawnWriter(address: string, context: LocalContext) {
         let props = actor.fromProducer(() => new EndpointWriter(address))
             .WithMailbox(() => new EndpointWriterMailbox(1000))
-        let writer = actor.spawn(props)
+        let writer = await actor.spawn(props)
         return writer
     }
 
-    _spawnWatcher(address: string, context: LocalContext) {
+    async _spawnWatcher(address: string, context: LocalContext) {
         // todo
         return null
     }
@@ -212,8 +212,8 @@ class Endpoint {
     }
 }
 
-class Activator {
-    Receive(context: LocalContext) {
+class Activator implements actor.IActor {
+    async Receive(context: LocalContext) {
         let msg = context.Message
         if (msg instanceof remoteProto.remote.ActorPidRequest) {
             let props = Remote.GetKnownKind(msg.kind)
@@ -282,7 +282,7 @@ export class Remote {
     static kinds: { [kind: string]: Props } = {}
     static EndpointManager: PID;
     static Activator: PID;
-    static Start(host: string, port: number) {
+    static async Start(host: string, port: number) {
         let addr = host + ':' + port
         processRegistry.RegisterHostResolver(pid => new RemoteProcess())
 
@@ -296,8 +296,8 @@ export class Remote {
 
         processRegistry.Address = addr
 
-        this.EndpointManager = actor.spawn(actor.fromProducer(() => new EndpointManager()))
-        this.Activator = actor.spawnNamed(actor.fromProducer(() => new Activator()), "activator")
+        this.EndpointManager = await actor.spawn(actor.fromProducer(() => new EndpointManager()))
+        this.Activator = await actor.spawnNamed(actor.fromProducer(() => new Activator()), "activator")
     }
 
     static GetKnownKind(kind: string) {

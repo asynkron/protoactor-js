@@ -83,18 +83,18 @@ export class LocalContext implements IMessageInvoker {
         }
     }
 
-    Spawn(props: Props) {
+    async Spawn(props: Props) {
         var name = processRegistry.NextId()
-        return this.SpawnNamed(props, name)
+        return await this.SpawnNamed(props, name)
     }
 
-    SpawnPrefix(props: Props, prefix: string) {
+    async SpawnPrefix(props: Props, prefix: string) {
         var name = prefix + processRegistry.NextId()
-        return this.SpawnNamed(props, name)
+        return await this.SpawnNamed(props, name)
     }
     
-    SpawnNamed(props: Props, name: string) {
-        var pid = props.Spawn(this.Self.Id + '/' + name, this.Self)
+    async SpawnNamed(props: Props, name: string) {
+        let pid:PID = await props.Spawn(this.Self.Id + '/' + name, this.Self)
         this.Children.push(pid)
         return pid
     }

@@ -6,11 +6,15 @@ class Hello {
     }
 }
 
-var props = actor.fromFunc(context => {
-    var msg = context.Message
-    if (msg instanceof Hello) {
-        global.console.log('Hello', msg.Who)
-    }
-});
-var pid = actor.spawn(props);
-pid.Tell(new Hello("Christian"))
+async function run() {
+    var props = actor.fromFunc(context => {
+        var msg = context.Message
+        if (msg instanceof Hello) {
+            global.console.log('Hello', msg.Who)
+        }
+    });
+    var pid = await actor.spawn(props);
+    pid.Tell(new Hello("Christian"))
+}
+
+run()
