@@ -60,26 +60,26 @@ export class LocalContext implements IMessageInvoker {
             // failure.Who was prev this.Self, seemed odd?
             this.supervisorStrategy.HandleFailure(this as any as ISupervisor, failure.Who, this.restartStatistics, exception)
         } else {
-            this.Self.SendSystemMessage(messages.SuspendMailbox)
+            this.Self.SendSystemMessage(messages.SuspendMailbox.Instance)
             this.Parent.SendSystemMessage(failure)
         }
     }
 
     RestartChildren(...pids: PID[]) {
         for (var i = 0; i < pids.length; i++) {
-            pids[i].SendSystemMessage(messages.Restart)
+            pids[i].SendSystemMessage(messages.Restart.Instance)
         }
     }
 
     StopChildren(...pids: PID[]) {
         for (var i = 0; i < pids.length; i++) {
-            pids[i].SendSystemMessage(messages.Stop)
+            pids[i].SendSystemMessage(messages.Stop.Instance)
         }
     }
 
     ResumeChildren(...pids: PID[]) {
         for (var i = 0; i < pids.length; i++) {
-            pids[i].SendSystemMessage(messages.Resume)
+            pids[i].SendSystemMessage(messages.Resume.Instance)
         }
     }
 
@@ -126,7 +126,7 @@ export class LocalContext implements IMessageInvoker {
     async _handleStop() {
         this.restarting = false
         this.stopping = true
-        await this.InvokeUserMessage(messages.Stopping)
+        await this.InvokeUserMessage(messages.Stopping.Instance)
         if (this.Children && this.Children.length > 0) {
             for (var i = 0; i < this.Children.length; i++) {
                 this.Children[i].Stop()
@@ -149,7 +149,7 @@ export class LocalContext implements IMessageInvoker {
     async _handleRestart() {
         this.stopping = false
         this.restarting = true
-        await this.InvokeUserMessage(messages.Restarting)
+        await this.InvokeUserMessage(messages.Restarting.Instance)
         if (this.Children && this.Children.length > 0) {
             for (var i = 0; i < this.Children.length; i++) {
                 this.Children[i].Stop()
@@ -174,13 +174,13 @@ export class LocalContext implements IMessageInvoker {
 
     async _restart() {
         this._incarnateActor()
-        this.Self.SendSystemMessage(messages.ResumeMailbox)
+        this.Self.SendSystemMessage(messages.ResumeMailbox.Instance)
         await this.InvokeUserMessage(messages.Started)
     }
 
     async _stopped() {
         processRegistry.Remove(this.Self)
-        await this.InvokeUserMessage(messages.Stopped)
+        await this.InvokeUserMessage(messages.Stopped.Instance)
     }
     async _processMessage(message: messages.Message) {
         if (message instanceof messages.MessageSender) {

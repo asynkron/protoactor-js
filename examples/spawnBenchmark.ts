@@ -49,7 +49,7 @@ async function run() {
     var pid = await actor.spawn(myProps)
     global.console.log('starting')
     var hrstart = process.hrtime();
-    var response = await pid.RequestPromise(new Request(10, 0, 10 * 1000)) // should be 1M but node can't handle it - runs out of memory
+    var response = await pid.RequestPromise(new Request(10, 0, 100 * 1000)) // should be 1M but node can't handle it - runs out of memory
     global.console.log(response)
     var hr = process.hrtime(hrstart)
     var s = hr[0] + hr[1] / (1000 * 1000 * 1000)

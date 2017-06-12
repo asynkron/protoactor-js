@@ -47,19 +47,19 @@ class ChildActor implements IActor {
             global.console.log(ctx.Self.ToShortString(), 'Fatal')
             throw msg
         }
-        if (msg == messages.Started) {
+        if (msg instanceof messages.Started) {
             global.console.log(ctx.Self.ToShortString(), 'Started')
         }
-        if (msg == messages.Stopping) {
+        if (msg instanceof messages.Stopping) {
             global.console.log(ctx.Self.ToShortString(), 'Stopping')
         }
-        if (msg == messages.Stopped) {
+        if (msg instanceof messages.Stopped) {
             global.console.log(ctx.Self.ToShortString(), 'Stopped')
         }
-        if (msg == messages.Stopping) {
+        if (msg instanceof messages.Stopping) {
             global.console.log(ctx.Self.ToShortString(), 'Stopping')
         }
-        if (msg == messages.Restarting) {
+        if (msg instanceof messages.Restarting) {
             global.console.log(ctx.Self.ToShortString(), 'Restarting')
         }
 

@@ -21,6 +21,6 @@ export class LocalProcess implements IProcess {
     }
 
     Stop(pid: PID) {
-        this.SendSystemMessage(pid, messages.Stop)
+        this.SendSystemMessage(pid, messages.Stop.Instance)
     }
 }
