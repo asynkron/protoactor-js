@@ -111,7 +111,6 @@ export class LocalContext implements IMessageInvoker {
     }
 
     PopBehavior(receive?: Function) {
-        global.console.log("is recieve necessary?", receive);
         if (this._behavior.length <= 1) {
             throw "Cannot pop actor's last behavior"
         }

@@ -24,9 +24,13 @@ let goodbyeBehavior = (context: LocalContext) => {
     }
 }
 
-var props = actor.fromFunc(helloBehavior)
-var pid = actor.spawn(props)
+async function run() {
+    let props = actor.fromFunc(helloBehavior)
+    let pid = await actor.spawn(props)
 
-pid.Tell(new Hello("Christian"))
-pid.Tell(new Hello("Christian"))
-pid.Tell(new Hello("Christian"))
+    await pid.Tell(new Hello("Christian"))
+    await pid.Tell(new Hello("Christian"))
+    await pid.Tell(new Hello("Christian"))
+}
+
+run()
