@@ -29,7 +29,7 @@ export class Mailbox implements IMailbox {
         for (var i = 0; i < this.mailboxStatistics.length; i++) {
             this.mailboxStatistics[i].UserMessagePosted(message)
         }
-        await this.userMessageQueue.enqueue(message)
+        this.userMessageQueue.enqueue(message)
         this.processMessages()
     }
 
@@ -37,7 +37,7 @@ export class Mailbox implements IMailbox {
         for (var i = 0; i < this.mailboxStatistics.length; i++) {
             this.mailboxStatistics[i].SystemMessagePosted(message)
         }
-        await this.systemMessageQueue.enqueue(message)
+        this.systemMessageQueue.enqueue(message)
         this.processMessages()
     }
 

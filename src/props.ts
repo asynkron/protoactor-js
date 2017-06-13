@@ -54,7 +54,7 @@ export class Props {
         var pid = processRegistry.TryAdd(name, ref)
         context.Self = pid
         mailbox.RegisterHandlers(context, dispatcher)
-        await mailbox.PostSystemMessage(messages.Started.Instance)
+        mailbox.PostSystemMessage(messages.Started.Instance)
         mailbox.Start()
         return pid
     }

@@ -16,8 +16,8 @@ http://creativecommons.org/publicdomain/zero/1.0/legalcode
  */
 
 export interface IQueue {
-  getLength(): number;
-  enqueue(item: any): Promise<any>;
+  getLength(): number
+  enqueue(item: any): void
   dequeue(): any;
   peek(): any;
   isEmpty(): boolean;
@@ -57,7 +57,6 @@ export class Queue implements IQueue {
      */
     this.enqueue = (item: any) => {
       queue.push(item);
-      return Promise.resolve()
     }
 
     /* Dequeues an item and returns it. If the queue is empty, the value
