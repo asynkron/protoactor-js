@@ -21,16 +21,16 @@ This library is in a very early/draft state. There is no pipeline yet for buildi
 Requires Node 7.6.0+ and TypeScript.
 
 **Build**
-```
-> npm i
-> ./generate.sh # generates Protobuf types
-> tsc
+```bash
+npm i
+./generate.sh # generates Protobuf types
+tsc
 ```
 **Run tests**
-```
-> npm test
+```bash
+npm test
 ```
 **Run examples**
-```
-> node dist/examples/helloWorld.js
+```bash
+node dist/examples/helloWorld.js
 ```
