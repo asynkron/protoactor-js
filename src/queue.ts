@@ -27,7 +27,7 @@ export class Queue implements IQueue {
   getLength(): number {
     throw new Error("Method not implemented.");
   }
-  enqueue(item: any): Promise<any> {
+  enqueue(item: any) {
     throw new Error("Method not implemented. " + item);
   }
   dequeue() {

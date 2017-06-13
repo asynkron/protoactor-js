@@ -47,7 +47,7 @@ export class LocalContext implements IMessageInvoker {
     }
 
     Respond(message: messages.Message) {
-        this.Sender.Tell(message)
+        return this.Sender.Tell(message)
     }
 
     EscalateFailure(exception: string, message?: messages.Failure) {

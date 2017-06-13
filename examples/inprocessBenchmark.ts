@@ -52,7 +52,7 @@ class PingActor implements actor.IActor {
     }
 }
 
-let messageCount = 1000000
+let messageCount = 100000
 let batchSize = 100
 var tps = [300, 400, 500, 600, 700, 800, 900]
 

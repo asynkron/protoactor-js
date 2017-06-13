@@ -19,9 +19,9 @@ class MyActor implements actor.IActor {
         var message = context.Message
         if (message instanceof Request) {
             if (message.Size == 1) {
-                context.Respond(message.Num)
+                await context.Respond(message.Num)
                 context.Self.Stop()
-                return
+                return actor.done
             }
             this.Replies = message.Div
             this.ReplyTo = context.Sender
@@ -30,17 +30,17 @@ class MyActor implements actor.IActor {
                 var num = message.Num + i * (message.Size / message.Div)
                 var size = message.Size / message.Div
                 var div = message.Div
-                child.Request(new Request(div, num, size), context.Self)
+                await child.Request(new Request(div, num, size), context.Self)
             }
-            return
+                return actor.done
         }
         if (typeof(message) === 'number') {
             this.Sum += Number(message)
             this.Replies--
             if (this.Replies == 0 && this.ReplyTo) {
-                this.ReplyTo.Tell(this.Sum)
+                await this.ReplyTo.Tell(this.Sum)
             }
-            return
+                return actor.done
         }
     }
 }

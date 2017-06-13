@@ -45,7 +45,7 @@ export class PID extends messages.actor.PID {
 
     Request(message: Message, sender: PID) {
         let reff = this.Ref || processRegistry.Get(this)
-        reff.SendUserMessage(this, message, sender)
+        return reff.SendUserMessage(this, message, sender)
     }
 
     Stop() {
