@@ -9,7 +9,7 @@ import { PID } from './pid';
 import { IActor } from "./actor";
 
 export interface ISpawner {
-    (props: Props, name: string, parent?: PID): Promise<PID>
+    (props: Props, name: string, parent?: PID): PID
 }
 export class Props {
     mailboxProducer = (): IMailbox => Unbounded();
@@ -37,7 +37,7 @@ export class Props {
         return this
     }
 
-    Spawn(name: string, parent?: PID): Promise<PID> {
+    Spawn(name: string, parent?: PID): PID {
         return this.spawner(this, name, parent)
     }
 
@@ -46,7 +46,7 @@ export class Props {
         return this;
     }
 
-    static async DefaultSpawner(props: Props, name: string, parent?: PID): Promise<PID> {
+    static DefaultSpawner(props: Props, name: string, parent?: PID): PID {
         var context = new LocalContext(props.producer, props.supervisorStrategy, parent)
         var mailbox = props.mailboxProducer()
         var dispatcher = props.dispatcher

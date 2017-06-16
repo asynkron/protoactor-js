@@ -83,22 +83,21 @@ export class LocalContext implements IMessageInvoker {
         }
     }
 
-    async Spawn(props: Props) {
+    Spawn(props: Props) {
         var name = processRegistry.NextId()
-        return await this.SpawnNamed(props, name)
+        return this.SpawnNamed(props, name)
     }
 
-    async SpawnPrefix(props: Props, prefix: string) {
+    SpawnPrefix(props: Props, prefix: string) {
         var name = prefix + processRegistry.NextId()
-        return await this.SpawnNamed(props, name)
+        return this.SpawnNamed(props, name)
     }
     
-    async SpawnNamed(props: Props, name: string) {
-        let pid:PID = await props.Spawn(this.Self.Id + '/' + name, this.Self)
+    SpawnNamed(props: Props, name: string) {
+        let pid:PID = props.Spawn(this.Self.Id + '/' + name, this.Self)
         this.Children.push(pid)
         return pid
     }
-
 
     SetBehavior(receive: Function) {
         this._behavior = []
@@ -157,38 +156,36 @@ export class LocalContext implements IMessageInvoker {
         await this._tryRestartOrTerminate
     }
 
-    async _tryRestartOrTerminate() {
+    _tryRestartOrTerminate() {
         if (this.Children && this.Children.length > 0) {
             return
         }
         if (this.restarting) {
-            await this._restart()
-            return
+            return this._restart()
         }
         if (this.stopping) {
-            await this._stopped()
-            return
+            return this._stopped()
         }
     }
 
-    async _restart() {
+    _restart() {
         this._incarnateActor()
         this.Self.SendSystemMessage(messages.ResumeMailbox.Instance)
-        await this.InvokeUserMessage(messages.Started)
+        return this.InvokeUserMessage(messages.Started)
     }
 
-    async _stopped() {
+    _stopped() {
         processRegistry.Remove(this.Self)
-        await this.InvokeUserMessage(messages.Stopped.Instance)
+        return this.InvokeUserMessage(messages.Stopped.Instance)
     }
-    async _processMessage(message: messages.Message) {
+    _processMessage(message: messages.Message) {
         if (message instanceof messages.MessageSender) {
             this.Message = message.Message
             this.Sender = message.Sender
         } else {
             this.Message = message
         }
-        await this._receive(this)
+        return this._receive(this)
     }
 }
 

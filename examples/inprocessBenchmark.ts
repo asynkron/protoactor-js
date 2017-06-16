@@ -52,7 +52,7 @@ class PingActor implements actor.IActor {
     }
 }
 
-let messageCount = 100000
+let messageCount = 1000000
 let batchSize = 100
 var tps = [300, 400, 500, 600, 700, 800, 900]
 
@@ -76,8 +76,8 @@ async function benchmark(t: number) {
         let awaiter = new Awaiter()
         let clientProps = actor.fromProducer(() => new PingActor(awaiter, messageCount, batchSize))
             .WithDispatcher(d)
-        let client = await actor.spawn(clientProps)
-        let echo = await actor.spawn(echoProps)
+        let client = actor.spawn(clientProps)
+        let echo = actor.spawn(echoProps)
         promises.push(awaiter.promise)
         clients.push(client)
         echos.push(echo)
@@ -85,7 +85,7 @@ async function benchmark(t: number) {
 
     let t0 = new Date().getTime()
     for (let i = 0; i < clientCount; i++) {
-        await clients[i].Tell(new Start(echos[i]))
+        clients[i].Tell(new Start(echos[i]))
     }
     await Promise.all(promises)
     let t1 = new Date().getTime()

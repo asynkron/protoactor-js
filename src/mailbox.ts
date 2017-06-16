@@ -10,8 +10,8 @@ export interface IStatistics {
     MailboxEmpty(): void;
 }
 export interface IMailbox {
-    PostUserMessage(message: messages.Message): Promise<void>
-    PostSystemMessage(message: messages.Message): Promise<void>
+    PostUserMessage(message: messages.Message): void
+    PostSystemMessage(message: messages.Message): void
     RegisterHandlers(invoker: IMessageInvoker, dispatcher: Dispatcher): void;
     Start(): void;
 }
@@ -25,7 +25,7 @@ export class Mailbox implements IMailbox {
 
     }
 
-    async PostUserMessage(message: messages.Message) {
+    PostUserMessage(message: messages.Message) {
         for (var i = 0; i < this.mailboxStatistics.length; i++) {
             this.mailboxStatistics[i].UserMessagePosted(message)
         }
@@ -33,7 +33,7 @@ export class Mailbox implements IMailbox {
         this.processMessages()
     }
 
-    async PostSystemMessage(message: messages.Message) {
+    PostSystemMessage(message: messages.Message) {
         for (var i = 0; i < this.mailboxStatistics.length; i++) {
             this.mailboxStatistics[i].SystemMessagePosted(message)
         }

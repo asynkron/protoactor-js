@@ -14,17 +14,17 @@ export function fromProducer(fn: () => IActor) {
     return new Props().WithProducer(fn)
 }
 
-export function spawn(props: Props): Promise<PID> {
+export function spawn(props: Props): PID {
     var name = processRegistry.NextId()
     return spawnNamed(props, name)
 }
 
-export function spawnPrefix(props: Props, prefix: string): Promise<PID> {
+export function spawnPrefix(props: Props, prefix: string): PID {
     var name = prefix + processRegistry.NextId()
     return spawnNamed(props, name)
 }
 
-export function spawnNamed(props: Props, name: string): Promise<PID> {
+export function spawnNamed(props: Props, name: string): PID {
     return props.Spawn(name)
 }
 
