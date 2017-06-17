@@ -22,7 +22,8 @@ describe('actor', () => {
     it('should receive Started message when started', async () => {
         let received : any[] = []
         let aw = new Awaiter()
-        await actor.spawn(
+        
+        actor.spawn(
             actor.fromFunc(context => {
                 var msg = context.Message
                 if (msg instanceof messages.Started) {
@@ -31,6 +32,7 @@ describe('actor', () => {
                 }
             })
         )
+
         await aw.promise
         assert.sameDeepMembers(received, [
             messages.Started.Instance
@@ -40,7 +42,7 @@ describe('actor', () => {
     it('should receive Stopping and Stopped message when stopped', async () => {
         let received : any[] = []
         let aw = new Awaiter()
-        let pid = await actor.spawn(
+        let pid = actor.spawn(
             actor.fromFunc(context => {
                 var msg = context.Message
                 if (msg instanceof messages.Stopping || msg instanceof messages.Stopped) {
@@ -51,7 +53,9 @@ describe('actor', () => {
                 }
             })
         );
+        
         pid.Stop()
+        
         await aw.promise
         assert.sameDeepMembers(received, [
             messages.Stopping.Instance,
@@ -62,7 +66,7 @@ describe('actor', () => {
     it('should receive message when using Tell', async () => {
         let received : any[] = []
         let aw = new Awaiter()
-        let pid = await actor.spawn(
+        let pid = actor.spawn(
             actor.fromFunc(context => {
                 var msg = context.Message
                 if (typeof(msg) === 'string') {
@@ -71,7 +75,9 @@ describe('actor', () => {
                 }
             })
         );
-        await pid.Tell('hello')
+
+        pid.Tell('hello')
+        
         await aw.promise
          assert.sameDeepMembers(received, [
             'hello'
@@ -79,7 +85,7 @@ describe('actor', () => {
     })
     
     it('should respond with message when using RequestPromise', async () => {
-        let pid = await actor.spawn(
+        let pid = actor.spawn(
             actor.fromFunc(context => {
                 var msg = context.Message
                 if (typeof(msg) === 'string') {
@@ -87,32 +93,39 @@ describe('actor', () => {
                 }
             })
         );
+
         let res = await pid.RequestPromise('hello')
+        
         assert.equal(res, 'hey')
     })
 
     it('should raise timeout if no response is sent when using RequestPromise', async () => {
-        let pid = await actor.spawn(
+        let pid = actor.spawn(
             actor.fromFunc(context => { })
         );
+
+        let p = pid.RequestPromise('hello', 10)
         
-        await assert.isRejected(pid.RequestPromise('hello', 10))
+        await assert.isRejected(p)
     })
 
     it('should be added to ProcessRegistry when spawned', async () => {
-        let pid = await actor.spawn(
+        let pid = actor.spawn(
             actor.fromFunc(context => {})
         );
+
         let reff = processRegistry.Get(pid)
         assert.isDefined(reff)
         assert.isNotNull(reff)
     })
     
     it('should be removed from ProcessRegistry when stopped', async () => {
-        let pid = await actor.spawn(
+        let pid = actor.spawn(
             actor.fromFunc(context => {})
         );
+        
         pid.Stop()
+        
         let reff = processRegistry.Get(pid)
         assert.isUndefined(reff)
     })
