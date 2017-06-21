@@ -14,9 +14,9 @@ export interface IContext extends IMessageInvoker {
     Self: PID;
     Sender: PID;
 
-    //Tell(target: PID, message: any): void;
-    //Request(target: PID, message: any): void;
-    //RequestPromise(target: PID, message: any): Promise<void>;
+    Tell(target: PID, message: any): void;
+    Request(target: PID, message: any): void;
+    RequestPromise(target: PID, message: any): Promise<void>;
     Respond(message: any): void;
 
     Spawn(props: Props): PID;
@@ -42,6 +42,7 @@ export class LocalContext implements IContext {
     public Self: PID;
     public Message: any;
     public Sender: PID;
+    
     constructor(private producer: () => IActor, private supervisorStrategy: IStrategy, public Parent?: PID) {
         this._incarnateActor()
     }
@@ -67,6 +68,19 @@ export class LocalContext implements IContext {
 
     InvokeUserMessage(message: messages.Message) {
         return this._processMessage(message)
+    }
+
+    Tell(target: PID, message: any): void {
+        // todo: sender middleware
+        target.Tell(message)
+    }
+
+    Request(target: PID, message: any): void {
+        target.Request(message, this.Self)
+    }
+
+    RequestPromise(target: PID, message: any, timeoutMs?: number): Promise<void> {
+        return target.RequestPromise(message, timeoutMs)
     }
 
     Respond(message: messages.Message) {
@@ -139,6 +153,7 @@ export class LocalContext implements IContext {
         this._behavior.pop()
         this._receive = this._behavior[this._behavior.length - 1]
     }
+
     _incarnateActor() {
         this.Actor = this.producer()
         this.SetBehavior(this.Actor.Receive.bind(this.Actor))
@@ -201,6 +216,7 @@ export class LocalContext implements IContext {
         processRegistry.Remove(this.Self)
         return this.InvokeUserMessage(messages.Stopped.Instance)
     }
+
     _processMessage(message: messages.Message) {
         if (message instanceof messages.MessageSender) {
             this.Message = message.Message
