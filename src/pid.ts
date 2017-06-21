@@ -27,12 +27,12 @@ export class PID extends messages.actor.PID {
 
     Tell(message: Message) {
         let reff = this.Ref || processRegistry.Get(this)
-        return reff.SendUserMessage(this, message)
+        reff.SendUserMessage(this, message)
     }
 
     SendSystemMessage(message: Message) {
         let reff = this.Ref || processRegistry.Get(this)
-        return reff.SendSystemMessage(this, message)
+        reff.SendSystemMessage(this, message)
     }
 
     RequestPromise(message: Message, timeoutMs: number = 0) {
@@ -45,7 +45,7 @@ export class PID extends messages.actor.PID {
 
     Request(message: Message, sender: PID) {
         let reff = this.Ref || processRegistry.Get(this)
-        return reff.SendUserMessage(this, message, sender)
+        reff.SendUserMessage(this, message, sender)
     }
 
     Stop() {

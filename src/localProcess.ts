@@ -11,13 +11,13 @@ export class LocalProcess implements IProcess {
 
     SendUserMessage(pid: PID, message: string, sender?: PID) {
         if (sender) {
-            return this.Mailbox.PostUserMessage(new messages.MessageSender(message, sender))
+            this.Mailbox.PostUserMessage(new messages.MessageSender(message, sender))
         }
-        return this.Mailbox.PostUserMessage(message)
+        this.Mailbox.PostUserMessage(message)
     }
 
     SendSystemMessage(pid: PID, message: messages.Message) {
-        return this.Mailbox.PostSystemMessage(message)
+        this.Mailbox.PostSystemMessage(message)
     }
 
     Stop(pid: PID) {
