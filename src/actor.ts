@@ -1,16 +1,16 @@
 import { Props } from "./props";
 import processRegistry from "./processRegistry";
-import { LocalContext } from "./localContext";
+import { IContext } from "./localContext";
 import { PID } from "./pid";
 import { Message } from "./messages"
 import { ISupervisor } from "./supervision";
 import { RestartStatistics } from "./restartStatistics";
 
-export function fromFunc(fn: (context: LocalContext) => void) {
+export function fromFunc(fn: (context: IContext) => void): Props {
     return fromProducer(() => new EmptyActor(fn))
 }
 
-export function fromProducer(fn: () => IActor) {
+export function fromProducer(fn: () => IActor): Props {
     return new Props().WithProducer(fn)
 }
 
@@ -29,14 +29,14 @@ export function spawnNamed(props: Props, name: string): PID {
 }
 
 class EmptyActor implements IActor {
-    constructor(private fn: (context: LocalContext) => void) { }
+    constructor(private fn: (context: IContext) => void) { }
 
-    async Receive(context: LocalContext) {
+    async Receive(context: IContext) {
         this.fn(context)
     }
 }
 export interface IActor {
-    Receive(context: LocalContext): Promise<void>;
+    Receive(context: IContext): Promise<void>;
 }
 
 export const done = Promise.resolve();

@@ -7,19 +7,42 @@ import { PID } from "./pid";
 import { IActor, done } from "./actor";
 import {IMessageInvoker} from "./invoker";
 
-export class LocalContext implements IMessageInvoker {
-    public Children: PID[] = [];
+export interface IContext extends IMessageInvoker {
+    Children: PID[];
+    Message: any;
+    Parent?: PID;
+    Self: PID;
+    Sender: PID;
+
+    //Tell(target: PID, message: any): void;
+    //Request(target: PID, message: any): void;
+    //RequestPromise(target: PID, message: any): Promise<void>;
+    Respond(message: any): void;
+
+    Spawn(props: Props): PID;
+    SpawnPrefix(props: Props, prefix: string): PID;
+    SpawnNamed(props: Props, name: string): PID;
+
+    //Watch(pid: PID)
+    //Unwatch(pid: PID)
+
+    //ReceiveTimeout: number
+    //SetReceiveTimeout(timeoutMs: number): void;
+}
+
+export class LocalContext implements IContext {
     private restartStatistics: RestartStatistics;
     private restarting: boolean;
     private stopping: boolean;
-    public Self: PID;
     private Actor: IActor;
     private _behavior: Function[] = [];
     private _receive: Function;
 
-    Message: string | messages.Message;
-    Sender: PID;
-    constructor(private producer: () => IActor, private supervisorStrategy: IStrategy, private Parent?: PID) {
+    public Children: PID[] = [];
+    public Self: PID;
+    public Message: any;
+    public Sender: PID;
+    constructor(private producer: () => IActor, private supervisorStrategy: IStrategy, public Parent?: PID) {
         this._incarnateActor()
     }
 

@@ -1,15 +1,15 @@
 export class Dispatcher {
     throughput = 10;
 
-    Schedule(fn: Function) {
+    Schedule(fn: Function): void {
         fn()
     }
 
-    GetThroughput() {
+    GetThroughput(): number {
         return this.throughput
     }
 
-    SetThroughput(t: number) {
+    SetThroughput(t: number): void {
         this.throughput = t
     }
 }
