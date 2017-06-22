@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cpx86/protoactor-js.git"
+    "url": "git+https://github.com/asynkronit/protoactor-js.git"
   },
   "author": "",
-  "license": "MIT",
+  "license": "Apache License 2.0",
   "bugs": {
-    "url": "https://github.com/cpx86/protoactor-js/issues"
+    "url": "https://github.com/asynkronit/protoactor-js/issues"
   },
-  "homepage": "https://github.com/cpx86/protoactor-js#readme",
+  "homepage": "https://github.com/asynkronit/protoactor-js#readme",
   "devDependencies": {
     "@types/chai": "^4.0.0",
     "@types/chai-as-promised": "0.0.31",
