@@ -50,6 +50,12 @@ class TestMailboxStatistics implements mailbox.IStatistics {
     SystemMessagePosted(message: messages.Message) {
         this.Posted.push(message)
     }
+    UserMessageReceived(message: messages.Message) {
+        this.Received.push(message)
+    }
+    SystemMessageReceived(message: messages.Message) {
+        this.Received.push(message)
+    }
     MailboxStarted() {}
     MailboxEmpty() {}
 }

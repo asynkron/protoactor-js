@@ -1,7 +1,7 @@
 import { Message } from "./messages";
 import { PID } from "./pid"
 export interface IMessageInvoker {
-    InvokeSystemMessage(message: Message): Promise<void>;
-    InvokeUserMessage(message: Message): Promise<void>;
+    InvokeSystemMessage(message: any): Promise<void>;
+    InvokeUserMessage(message: any): Promise<void>;
     EscalateFailure(error: any, child?: PID): void;
 }
