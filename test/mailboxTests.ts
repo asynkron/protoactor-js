@@ -8,19 +8,31 @@ import {assert, expect, use as chaiUse} from "chai"
 import * as chaiAsPromised from "chai-as-promised"
 import {Awaiter} from "./util/awaiter"
 
+class Failure {
+    constructor(public error: any, public child?: PID) { }
+}
 class MessageWithAwaiter {
     constructor(public awaiter: Awaiter) { }
+}
+class MessageWithError {
+    constructor(public error: ErrorWithAwaiter) { }
+}
+class ErrorWithAwaiter {
+    constructor(public awaiter: Awaiter) { }    
 }
 class StubInvoker implements IMessageInvoker {
     systemMessages: any[] = []
     userMessages: any[] = []
     allMessages: any[] = []
-    failures: [any, PID|undefined][] = []
+    failures: Failure[] = []
     InvokeSystemMessage(message: any): Promise<void> {
         this.systemMessages.push(message)
         this.allMessages.push(message)
         if (message instanceof MessageWithAwaiter) {
             message.awaiter.resolve()
+        }
+        if (message instanceof MessageWithError) {
+            throw message.error
         }
         return Promise.resolve()
     }
@@ -30,10 +42,16 @@ class StubInvoker implements IMessageInvoker {
         if (message instanceof MessageWithAwaiter) {
             message.awaiter.resolve()
         }
+        if (message instanceof MessageWithError) {
+            throw message.error
+        }
         return Promise.resolve()
     }
     EscalateFailure(error: any, child?: PID): void {
-        this.failures.push([error, child])
+        this.failures.push(new Failure(error, child))
+        if (error instanceof ErrorWithAwaiter) {
+            error.awaiter.resolve()
+        }
     }
 }
 
@@ -122,5 +140,22 @@ describe('mailbox processing', () => {
 
         let isResolved = await aw.isResolvedWithin(10)
         assert.isTrue(isResolved)
+    })
+
+    it('should escalate failure on failing system message', async () => {
+        let mb = mailbox.Unbounded()
+        let invoker = new StubInvoker()
+        let dispatcher = new Dispatcher()
+        mb.RegisterHandlers(invoker, dispatcher)
+        let aw = new Awaiter()
+        let err = new ErrorWithAwaiter(aw)
+        let msg = new MessageWithError(err)
+
+        mb.PostSystemMessage(msg)
+
+        let isResolved = await aw.isResolvedWithin(10)
+        assert.isTrue(isResolved)
+        
+        assert.equal(invoker.failures[0].error, err)
     })
 })
