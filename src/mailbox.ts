@@ -80,7 +80,7 @@ export class Mailbox implements IMailbox {
                         this.suspended = false
                     }
                     await this.invoker.InvokeSystemMessage(msg)
-                    for (var i = 0; i < this.mailboxStatistics.length; i++) {
+                    for (var j = 0; j < this.mailboxStatistics.length; j++) {
                         this.mailboxStatistics[i].SystemMessageReceived(msg)
                     }
                     continue
@@ -91,6 +91,9 @@ export class Mailbox implements IMailbox {
                 msg = this.userMessageQueue.dequeue()
                 if (msg != undefined) {
                     await this.invoker.InvokeUserMessage(msg)
+                    for (var j = 0; j < this.mailboxStatistics.length; j++) {
+                        this.mailboxStatistics[i].UserMessageReceived(msg)
+                    }
                 } else {
                     break
                 }
