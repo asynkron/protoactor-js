@@ -22,7 +22,6 @@ export class Mailbox implements IMailbox {
     constructor(private systemMessageQueue: IQueue,
         private userMessageQueue: IQueue,
         private mailboxStatistics: IStatistics[] = []) {
-
     }
 
     PostUserMessage(message: messages.Message) {
@@ -114,4 +113,4 @@ export class Mailbox implements IMailbox {
     }
 }
 
-export const Unbounded = () => new Mailbox(new Queue(), new Queue());
+export const Unbounded = (...statistics: IStatistics[]) => new Mailbox(new Queue(), new Queue(), statistics || []);

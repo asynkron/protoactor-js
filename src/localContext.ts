@@ -119,7 +119,7 @@ export class LocalContext implements IContext {
 
     ResumeChildren(...pids: PID[]) {
         for (var i = 0; i < pids.length; i++) {
-            pids[i].SendSystemMessage(messages.Resume.Instance)
+            pids[i].SendSystemMessage(messages.ResumeMailbox.Instance)
         }
     }
 

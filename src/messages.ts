@@ -27,10 +27,6 @@ export class Restarting {
     static Instance: Restarting = new Restarting()
     private constructor() { }
 }
-export class Resume { 
-    static Instance: Resume = new Resume()
-    private constructor() { }
-}
 export class Terminated {
     constructor(public Who: PID) { }
 }

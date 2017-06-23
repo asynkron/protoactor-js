@@ -27,9 +27,7 @@ describe('actor messaging', () => {
         )
 
         await aw.promise
-        assert.sameDeepMembers(received, [
-            messages.Started.Instance
-        ])
+        assert.equal(received[0], messages.Started.Instance)
     })
 
     it('should receive Stopping and Stopped message when stopped', async () => {
@@ -50,10 +48,8 @@ describe('actor messaging', () => {
         pid.Stop()
         
         await aw.promise
-        assert.sameDeepMembers(received, [
-            messages.Stopping.Instance,
-            messages.Stopped.Instance
-        ])
+        assert.equal(received[0], messages.Stopping.Instance)
+        assert.equal(received[1], messages.Stopped.Instance)
     })
 
     it('should receive message when using Tell', async () => {
@@ -72,9 +68,7 @@ describe('actor messaging', () => {
         pid.Tell('hello')
         
         await aw.promise
-         assert.sameDeepMembers(received, [
-            'hello'
-        ])
+        assert.equal(received[0], 'hello')
     })
     
     it('should respond with message when using RequestPromise', async () => {
