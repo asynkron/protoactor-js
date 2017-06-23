@@ -58,7 +58,7 @@ const defaultDecider: IDecider = () => SupervisorDirective.Restart
 export const DefaultStrategy = new OneForOneStrategy(defaultDecider, 10, 10 * 1000)
 
 export interface IDecider {
-    (who: PID, reason: any): SupervisorDirective
+    (reason: any, who: PID): SupervisorDirective
 }
 
 export interface ISupervisor {
