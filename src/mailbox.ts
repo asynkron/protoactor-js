@@ -111,6 +111,60 @@ export class Mailbox implements IMailbox {
         }
         return Promise.resolve()
     }
+
+    // experimental (currently slower) implementation...
+    run2() {
+        var msg
+        try {
+            msg = this.systemMessageQueue.dequeue()
+            if (msg != undefined) {
+                if (msg instanceof messages.SuspendMailbox) {
+                    this.suspended = true
+                }
+                if (msg instanceof messages.ResumeMailbox) {
+                    this.suspended = false
+                }
+                this.invoker.InvokeSystemMessage(msg)
+                    .then(this.handleSuccess(msg))
+                    .catch(this.handleError)
+                return
+            }
+            if (this.suspended) {
+                return
+            }
+            msg = this.userMessageQueue.dequeue()
+            if (msg != undefined) {
+                this.invoker.InvokeUserMessage(msg)
+                    .then(this.handleSuccess(msg))
+                    .catch(this.handleError)
+                return
+            } else {
+                return
+            }
+        } catch (e) {
+            this.invoker.EscalateFailure(e)
+        }
+        this.running = false;
+        if (!this.systemMessageQueue.isEmpty() || !this.userMessageQueue.isEmpty()) {
+            setImmediate(this.schedule.bind(this));
+        } else {
+            for (var i = 0; i < this.mailboxStatistics.length; i++) {
+                this.mailboxStatistics[i].MailboxEmpty()
+            }
+        }
+    }
+    handleSuccess(msg: any) {
+        return () => {
+            for (var i = 0; i < this.mailboxStatistics.length; i++) {
+                this.mailboxStatistics[i].SystemMessageReceived(msg)
+            }
+            setImmediate(this.schedule.bind(this));
+        }
+    }
+    handleError(reason: any) {
+        this.invoker.EscalateFailure(reason)
+        setImmediate(this.schedule.bind(this));
+    }
 }
 
 export const Unbounded = (...statistics: IStatistics[]) => new Mailbox(new Queue(), new Queue(), statistics || []);
