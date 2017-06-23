@@ -1,7 +1,13 @@
+# node files
 node_modules/
-dist/
-tmp/
+package-lock.json
 
+# node profiler/inspector files
 *.log
 *.cpuprofile
 *.heapsnapshot
+
+# build artifacts
+dist/
+tmp/
+

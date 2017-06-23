@@ -2,29 +2,22 @@ import * as actor from "../src/actor"
 import {PID} from "../src/pid"
 import processRegistry from "../src/processRegistry"
 import * as messages from "../src/messages"
+
 import {assert, expect, use as chaiUse} from "chai"
 import * as chaiAsPromised from "chai-as-promised"
 
+import {Awaiter} from "./util/awaiter"
+
 chaiUse(chaiAsPromised)
 
-class Awaiter {
-    public promise: Promise<void>
-    public resolve: () => void
-    constructor() {
-        this.promise = new Promise<void>(resolve => {
-            this.resolve = resolve
-        })
-    }
-}
-
-describe('actor', () => {
+describe('actor messaging', () => {
 
     it('should receive Started message when started', async () => {
         let received : any[] = []
         let aw = new Awaiter()
         
         actor.spawn(
-            actor.fromFunc(context => {
+            actor.fromFunc(async context => {
                 var msg = context.Message
                 if (msg instanceof messages.Started) {
                     received.push(msg)
@@ -43,7 +36,7 @@ describe('actor', () => {
         let received : any[] = []
         let aw = new Awaiter()
         let pid = actor.spawn(
-            actor.fromFunc(context => {
+            actor.fromFunc(async context => {
                 var msg = context.Message
                 if (msg instanceof messages.Stopping || msg instanceof messages.Stopped) {
                     received.push(msg)
@@ -67,7 +60,7 @@ describe('actor', () => {
         let received : any[] = []
         let aw = new Awaiter()
         let pid = actor.spawn(
-            actor.fromFunc(context => {
+            actor.fromFunc(async context => {
                 var msg = context.Message
                 if (typeof(msg) === 'string') {
                     received.push(msg)
@@ -86,7 +79,7 @@ describe('actor', () => {
     
     it('should respond with message when using RequestPromise', async () => {
         let pid = actor.spawn(
-            actor.fromFunc(context => {
+            actor.fromFunc(async context => {
                 var msg = context.Message
                 if (typeof(msg) === 'string') {
                     context.Respond('hey')
@@ -101,7 +94,7 @@ describe('actor', () => {
 
     it('should raise timeout if no response is sent when using RequestPromise', async () => {
         let pid = actor.spawn(
-            actor.fromFunc(context => { })
+            actor.fromFunc(async context => { })
         );
 
         let p = pid.RequestPromise('hello', 10)
@@ -111,7 +104,7 @@ describe('actor', () => {
 
     it('should be added to ProcessRegistry when spawned', async () => {
         let pid = actor.spawn(
-            actor.fromFunc(context => {})
+            actor.fromFunc(async context => {})
         );
 
         let reff = processRegistry.Get(pid)
@@ -121,7 +114,7 @@ describe('actor', () => {
     
     it('should be removed from ProcessRegistry when stopped', async () => {
         let pid = actor.spawn(
-            actor.fromFunc(context => {})
+            actor.fromFunc(async context => {})
         );
         
         pid.Stop()
