@@ -8,15 +8,15 @@ export enum SupervisorDirective {
     Escalate = 3
 }
 export interface IStrategy {
-    HandleFailure(supervisor: ISupervisor, child: PID, restartStatistics: RestartStatistics, reason: string): void;
+    HandleFailure(supervisor: ISupervisor, child: PID, restartStatistics: RestartStatistics, reason: any): void;
 }
 export class OneForOneStrategy implements IStrategy {
     constructor(private decider: IDecider, private maxRetries: number, private withinMs = 0) {
 
     }
 
-    HandleFailure = (supervisor: ISupervisor, child: PID, restartStatistics: RestartStatistics, reason: string) => {
-        let directive = this.decider(child, reason)
+    HandleFailure(supervisor: ISupervisor, child: PID, restartStatistics: RestartStatistics, reason: any) {
+        let directive = this.decider(reason, child)
         switch (directive) {
             case SupervisorDirective.Resume:
                 supervisor.ResumeChildren(child);
@@ -35,12 +35,12 @@ export class OneForOneStrategy implements IStrategy {
                 supervisor.StopChildren(child)
                 break
             case SupervisorDirective.Escalate:
-                supervisor.EscalateFailure(child, reason)
+                supervisor.EscalateFailure(reason, child)
                 break
         }
     }
 
-    private requestRestartPermission = (restartStatistics: RestartStatistics) => {
+    private requestRestartPermission(restartStatistics: RestartStatistics) {
         if (this.maxRetries == 0) {
             return false
         }
@@ -65,7 +65,7 @@ export interface ISupervisor {
     ResumeChildren(child: PID): void;
     RestartChildren(child: PID): void;
     StopChildren(child: PID): void;
-    EscalateFailure(child: PID, reason: string): void;
+    EscalateFailure(error: any, child?: PID): void;
 }
 
 

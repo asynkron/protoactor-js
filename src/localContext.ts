@@ -7,7 +7,7 @@ import { PID } from "./pid";
 import { IActor, done } from "./actor";
 import {IMessageInvoker} from "./invoker";
 
-export interface IContext extends IMessageInvoker {
+export interface IContext extends IMessageInvoker, ISupervisor {
     Children: PID[];
     Message: any;
     Parent?: PID;
@@ -28,6 +28,7 @@ export interface IContext extends IMessageInvoker {
 
     //ReceiveTimeout: number
     //SetReceiveTimeout(timeoutMs: number): void;
+    //ClearReceiveTimeout(timeoutMs: number): void;
 }
 
 export class LocalContext implements IContext {
@@ -87,15 +88,14 @@ export class LocalContext implements IContext {
         return this.Sender.Tell(message)
     }
 
-    EscalateFailure(exception: string, message?: messages.Failure) {
-        global.console.log(`Failure ${exception}`, message);
+    EscalateFailure(exception: any, who: PID) {
         if (this.restartStatistics == undefined) {
             this.restartStatistics = new RestartStatistics()
         }
         var failure = new messages.Failure(this.Self, exception, this.restartStatistics)
         if (!this.Parent) {
             // failure.Who was prev this.Self, seemed odd?
-            this.supervisorStrategy.HandleFailure(this as any as ISupervisor, failure.Who, this.restartStatistics, exception)
+            this.supervisorStrategy.HandleFailure(this, failure.Who, this.restartStatistics, exception)
         } else {
             this.Self.SendSystemMessage(messages.SuspendMailbox.Instance)
             this.Parent.SendSystemMessage(failure)
