@@ -1,7 +1,7 @@
 import { Props } from "./props";
 import * as messages from "./messages";
 import processRegistry from "./processRegistry";
-import { IStrategy, ISupervisor } from "./supervision";
+import { IStrategy, ISupervisor, DefaultStrategy } from "./supervision";
 import { RestartStatistics } from "./restartStatistics";
 import { PID } from "./pid";
 import { IActor, done } from "./actor";
@@ -89,14 +89,17 @@ export class LocalContext implements IContext {
     }
 
     EscalateFailure(exception: any, who: PID) {
+        if (!who) {
+            who = this.Self
+        }
         if (this.restartStatistics == undefined) {
             this.restartStatistics = new RestartStatistics()
         }
-        var failure = new messages.Failure(this.Self, exception, this.restartStatistics)
         if (!this.Parent) {
             // failure.Who was prev this.Self, seemed odd?
-            this.supervisorStrategy.HandleFailure(this, failure.Who, this.restartStatistics, exception)
+            DefaultStrategy.HandleFailure(this, who, this.restartStatistics, exception)
         } else {
+            var failure = new messages.Failure(who, exception, this.restartStatistics)
             this.Self.SendSystemMessage(messages.SuspendMailbox.Instance)
             this.Parent.SendSystemMessage(failure)
         }
@@ -178,8 +181,7 @@ export class LocalContext implements IContext {
     }
 
     _handleFailure(failure: messages.Failure) {
-        var handleFailure = this.supervisorStrategy.HandleFailure;
-        handleFailure(this as any as ISupervisor, failure.Who, failure.RestartStatistics, failure.Reason);
+        this.supervisorStrategy.HandleFailure(this, failure.Who, failure.RestartStatistics, failure.Reason);
     }
 
     async _handleRestart() {

@@ -67,7 +67,7 @@ class ChildActor implements IActor {
     }
 }
 
-var decider: IDecider = (who, reason) => {
+var decider: IDecider = (reason, child) => {
     if (reason instanceof Recoverable)
         return SupervisorDirective.Restart;
     if (reason instanceof Fatal)
