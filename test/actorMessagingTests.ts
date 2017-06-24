@@ -14,7 +14,7 @@ describe('actor messaging', () => {
 
     it('should receive Started message when started', async () => {
         let received : any[] = []
-        let aw = new Awaiter()
+        let aw = new Awaiter<void>()
         
         actor.spawn(
             actor.fromFunc(async context => {

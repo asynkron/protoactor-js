@@ -12,13 +12,13 @@ class Failure {
     constructor(public error: any, public child?: PID) { }
 }
 class MessageWithAwaiter {
-    constructor(public awaiter: Awaiter) { }
+    constructor(public awaiter: Awaiter<void>) { }
 }
 class MessageWithError {
     constructor(public error: ErrorWithAwaiter) { }
 }
 class ErrorWithAwaiter {
-    constructor(public awaiter: Awaiter) { }    
+    constructor(public awaiter: Awaiter<void>) { }    
 }
 class StubInvoker implements IMessageInvoker {
     systemMessages: any[] = []
@@ -62,7 +62,7 @@ describe('mailbox processing', () => {
         let invoker = new StubInvoker()
         let dispatcher = new Dispatcher()
         mb.RegisterHandlers(invoker, dispatcher)
-        let aw = new Awaiter()
+        let aw = new Awaiter<void>()
         let msg = new MessageWithAwaiter(aw)
 
         mb.PostSystemMessage(msg)
@@ -77,7 +77,7 @@ describe('mailbox processing', () => {
         let invoker = new StubInvoker()
         let dispatcher = new Dispatcher()
         mb.RegisterHandlers(invoker, dispatcher)
-        let aw = new Awaiter()
+        let aw = new Awaiter<void>()
         let msg = new MessageWithAwaiter(aw)
 
         mb.PostUserMessage(msg)
@@ -92,7 +92,7 @@ describe('mailbox processing', () => {
         let invoker = new StubInvoker()
         let dispatcher = new Dispatcher()
         mb.RegisterHandlers(invoker, dispatcher)
-        let aw = new Awaiter()
+        let aw = new Awaiter<void>()
         let sysMsg1 = {}
         let usrMsg1 = {}
         let sysMsg2 = {}
@@ -116,7 +116,7 @@ describe('mailbox processing', () => {
         let invoker = new StubInvoker()
         let dispatcher = new Dispatcher()
         mb.RegisterHandlers(invoker, dispatcher)
-        let aw = new Awaiter()
+        let aw = new Awaiter<void>()
         let msg = new MessageWithAwaiter(aw)
 
         mb.PostSystemMessage(messages.SuspendMailbox.Instance)
@@ -131,7 +131,7 @@ describe('mailbox processing', () => {
         let invoker = new StubInvoker()
         let dispatcher = new Dispatcher()
         mb.RegisterHandlers(invoker, dispatcher)
-        let aw = new Awaiter()
+        let aw = new Awaiter<void>()
         let msg = new MessageWithAwaiter(aw)
 
         mb.PostSystemMessage(messages.SuspendMailbox.Instance)
@@ -147,7 +147,7 @@ describe('mailbox processing', () => {
         let invoker = new StubInvoker()
         let dispatcher = new Dispatcher()
         mb.RegisterHandlers(invoker, dispatcher)
-        let aw = new Awaiter()
+        let aw = new Awaiter<void>()
         let err = new ErrorWithAwaiter(aw)
         let msg = new MessageWithError(err)
 

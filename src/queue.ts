@@ -1,19 +1,14 @@
 /*
+  Adapted from Queue.js. Original license:
 
-Queue.js
+    A function to represent a queue
 
-A function to represent a queue
+    Created by Stephen Morley - http://code.stephenmorley.org/ - and released under
+    the terms of the CC0 1.0 Universal legal code:
 
-Created by Stephen Morley - http://code.stephenmorley.org/ - and released under
-the terms of the CC0 1.0 Universal legal code:
-
-http://creativecommons.org/publicdomain/zero/1.0/legalcode
+    http://creativecommons.org/publicdomain/zero/1.0/legalcode
 
 */
-
-/* Creates a new queue. A queue is a first-in-first-out (FIFO) data structure -
- * items are added to the end of the queue and removed from the front.
- */
 
 export interface IQueue {
   getLength(): number
@@ -24,68 +19,34 @@ export interface IQueue {
 }
 
 export class Queue implements IQueue {
+  private queue: any[] = []
+  private offset = 0
+
   getLength(): number {
-    throw new Error("Method not implemented.");
+    return this.queue.length - this.offset
   }
   enqueue(item: any) {
-    throw new Error("Method not implemented. " + item);
+      this.queue.push(item)
   }
   dequeue() {
-    throw new Error("Method not implemented.");
+    if (this.queue.length == 0) return undefined;
+
+    // store the item at the front of the queue
+    var item = this.queue[this.offset];
+
+    // increment the offset and remove the free space if necessary
+    if (++this.offset * 2 >= this.queue.length) {
+      this.queue = this.queue.slice(this.offset);
+      this.offset = 0;
+    }
+
+    // return the dequeued item
+    return item;
   }
   peek() {
-    throw new Error("Method not implemented.");
+    return (this.queue.length > 0 ? this.queue[this.offset] : undefined);
   }
   isEmpty(): boolean {
-    throw new Error("Method not implemented.");
-  }
-
-  constructor() {
-    // initialise the queue and offset
-    var queue: any[] = [];
-    var offset = 0;
-
-    // Returns the length of the queue.
-    this.getLength = () => queue.length - offset;
-
-    // Returns true if the queue is empty, and false otherwise.
-    this.isEmpty = () => queue.length == 0;
-
-    /* Enqueues the specified item. The parameter is:
-     *
-     * item - the item to enqueue
-     */
-    this.enqueue = (item: any) => {
-      queue.push(item);
-    }
-
-    /* Dequeues an item and returns it. If the queue is empty, the value
-     * 'undefined' is returned.
-     */
-    this.dequeue = function () {
-
-      // if the queue is empty, return immediately
-      if (queue.length == 0) return undefined;
-
-      // store the item at the front of the queue
-      var item = queue[offset];
-
-      // increment the offset and remove the free space if necessary
-      if (++offset * 2 >= queue.length) {
-        queue = queue.slice(offset);
-        offset = 0;
-      }
-
-      // return the dequeued item
-      return item;
-
-    }
-
-    /* Returns the item at the front of the queue (without dequeuing it). If the
-     * queue is empty then undefined is returned.
-     */
-    this.peek = function () {
-      return (queue.length > 0 ? queue[offset] : undefined);
-    }
+    return this.queue.length == 0
   }
 }

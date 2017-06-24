@@ -1,13 +1,13 @@
 import {Sleep} from "./sleep"
 
-export class Awaiter {
-    public promise: Promise<void>
-    public resolve: () => void
+export class Awaiter<T> {
+    public promise: Promise<T>
+    public resolve: (v?:T) => void
     private isResolved: boolean = false
     constructor() {
-        this.promise = new Promise<void>(resolve => {
-            this.resolve = () => {
-                resolve()
+        this.promise = new Promise<T>(resolve => {
+            this.resolve = (v) => {
+                resolve(v)
                 this.isResolved = true
             }
         })

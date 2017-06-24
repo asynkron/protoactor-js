@@ -29,7 +29,7 @@ class ParentActor implements actor.IActor {
 }
 
 class ChildActor implements actor.IActor {
-    constructor(private awaiter: Awaiter) {}
+    constructor(private awaiter: Awaiter<void>) {}
     Receive(context: IContext): Promise<void> {
         switch (context.Message) {
             case 'die':
@@ -64,7 +64,7 @@ describe('one-for-one supervision', () => {
 
     it('should resume child on failure', async () => {
         let childMailboxStats = new TestMailboxStatistics()
-        let aw = new Awaiter()
+        let aw = new Awaiter<void>()
         let strategy = new supervision.OneForOneStrategy((reason: any, who: PID) => { return supervision.SupervisorDirective.Resume }, 1)
         let childProps = actor.fromProducer(() => new ChildActor(aw))
             .WithMailbox(() => mailbox.Unbounded(childMailboxStats))
