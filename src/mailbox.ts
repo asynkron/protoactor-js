@@ -28,19 +28,19 @@ export class Mailbox implements IMailbox {
     }
 
     PostUserMessage(message: messages.Message) {
+        this.userMessageQueue.enqueue(message)
         for (var i = 0; i < this.mailboxStatistics.length; i++) {
             this.mailboxStatistics[i].UserMessagePosted(message)
         }
-        this.userMessageQueue.enqueue(message)
-        this.processMessages()
+        this.schedule()
     }
 
     PostSystemMessage(message: messages.Message) {
+        this.systemMessageQueue.enqueue(message)
         for (var i = 0; i < this.mailboxStatistics.length; i++) {
             this.mailboxStatistics[i].SystemMessagePosted(message)
         }
-        this.systemMessageQueue.enqueue(message)
-        this.processMessages()
+        this.schedule()
     }
 
     RegisterHandlers(invoker: IMessageInvoker, dispatcher: Dispatcher) {
@@ -54,20 +54,30 @@ export class Mailbox implements IMailbox {
         }
     }
 
-    processMessages() {
-        if (this.running) return
+    run() {
+        let done = this.run2()
+
+        if (!done) {
+            return Promise.resolve()
+        }
+
+        this.running = false
 
         if (!this.systemMessageQueue.isEmpty() || !this.userMessageQueue.isEmpty()) {
             this.schedule()
+        } else {
+            // empty...
         }
+
+        return Promise.resolve()
     }
 
     schedule() {
         this.running = true;
-        this.dispatcher.Schedule(this.run.bind(this));
+        this.dispatcher.Schedule(this.run2.bind(this));
     }
 
-    async run() {
+    async runOld() {
         var msg
         try {
             for (var i = 0; i < this.dispatcher.GetThroughput(); i++) {
@@ -127,19 +137,19 @@ export class Mailbox implements IMailbox {
                 this.invoker.InvokeSystemMessage(msg)
                     .then(this.handleSuccess(msg))
                     .catch(this.handleError)
-                return
+                return false
             }
             if (this.suspended) {
-                return
+                return true
             }
             msg = this.userMessageQueue.dequeue()
             if (msg != undefined) {
                 this.invoker.InvokeUserMessage(msg)
                     .then(this.handleSuccess(msg))
                     .catch(this.handleError)
-                return
+                return false
             } else {
-                return
+                return true
             }
         } catch (e) {
             this.invoker.EscalateFailure(e)
@@ -152,6 +162,7 @@ export class Mailbox implements IMailbox {
                 this.mailboxStatistics[i].MailboxEmpty()
             }
         }
+        return true
     }
     handleSuccess(msg: any) {
         return () => {
