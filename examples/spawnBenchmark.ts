@@ -19,26 +19,26 @@ class MyActor implements actor.IActor {
         var message = context.Message
         if (message instanceof Request) {
             if (message.Size == 1) {
-                await context.Respond(message.Num)
+                context.Respond(message.Num)
                 context.Self.Stop()
                 return actor.done
             }
             this.Replies = message.Div
             this.ReplyTo = context.Sender
             for (var i = 0; i < message.Div; i++) {
-                var child = await actor.spawn(myProps)
+                var child = actor.spawn(myProps)
                 var num = message.Num + i * (message.Size / message.Div)
                 var size = message.Size / message.Div
                 var div = message.Div
-                await child.Request(new Request(div, num, size), context.Self)
+                child.Request(new Request(div, num, size), context.Self)
             }
-                return actor.done
+            return actor.done
         }
         if (typeof(message) === 'number') {
             this.Sum += Number(message)
             this.Replies--
             if (this.Replies == 0 && this.ReplyTo) {
-                await this.ReplyTo.Tell(this.Sum)
+                this.ReplyTo.Tell(this.Sum)
             }
                 return actor.done
         }
@@ -46,14 +46,16 @@ class MyActor implements actor.IActor {
 }
 
 async function run() {
-    var pid = await actor.spawn(myProps)
-    global.console.log('starting')
-    var hrstart = process.hrtime();
-    var response = await pid.RequestPromise(new Request(10, 0, 100 * 1000)) // should be 1M but node can't handle it - runs out of memory
-    global.console.log(response)
-    var hr = process.hrtime(hrstart)
-    var s = hr[0] + hr[1] / (1000 * 1000 * 1000)
-    global.console.log(s + ' seconds')
+    //while(true){
+        var pid = await actor.spawn(myProps)
+        global.console.log('starting - 10,000')
+        var hrstart = process.hrtime();
+        var response = await pid.RequestPromise(new Request(10, 0, 10 * 1000)) // should be 1M but node can't handle it - runs out of memory
+        global.console.log(response)
+        var hr = process.hrtime(hrstart)
+        var s = hr[0] + hr[1] / (1000 * 1000 * 1000)
+        global.console.log(s + ' seconds')
+    //}
 }
 
 run()
