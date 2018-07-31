@@ -50,7 +50,7 @@ describe('mailbox with Queue', () => {
 
     it('should post at least 100,000 messages/s', async () => {
         let mb = new mailbox.Mailbox(new Queue(), new Queue())
-        let aw = new Awaiter()
+        let aw = new Awaiter<number>()
         mb.RegisterHandlers(new Invoker(aw), new Dispatcher());
         var mbActionTimer = createActionTimer(mb, 500 * 1000);
         assert(mbActionTimer(mb => mb.PostUserMessage("hello")) > 100)
@@ -63,7 +63,7 @@ describe('mailbox with Queue2', () => {
 
     it('should post at least 100,000 messages/s', async () => {
         let mb = new mailbox.Mailbox(new Queue2(), new Queue2())
-        let aw = new Awaiter()
+        let aw = new Awaiter<number>()
         mb.RegisterHandlers(new Invoker(aw), new Dispatcher());
         var mbActionTimer = createActionTimer(mb, 500 * 1000);
         assert(mbActionTimer(mb => mb.PostUserMessage("hello")) > 100)
