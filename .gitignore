@@ -6,6 +6,8 @@ package-lock.json
 *.log
 *.cpuprofile
 *.heapsnapshot
+*.log.fix
+*.log.processed
 
 # build artifacts
 dist/
